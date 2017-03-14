@@ -13,73 +13,69 @@ public class two_b {
 
 	public static void main(String[] args) 
 	{
-		/*********************************************************************
-		  READ COMPRESSED FILE AND SAVE INTO BYTE OUTPUT STREAM
-		 *********************************************************************/
-		InputStream input = null;
+		ByteArrayOutputStream output = null;
+		
 		try 
 		{
-			input = new FileInputStream("compressed.txt");
+			output = getCompressedData();
 		} 
-		catch (FileNotFoundException e) 
+		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Exception thrown when reading compressed file: " + e);
 		}
+		
+		
+		try 
+		{
+			writeByteStream(output);
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("Exception thrown when writing uncompressed data to file: " + e);
+		}
+	
+
+	}
+
+
+	/*********************************************************************
+	  WRITE BYTE OUTPUT STREAM TO A NEW FILE AS A STRING
+	 *********************************************************************/
+	private static void writeByteStream(ByteArrayOutputStream output) throws IOException 
+	{
+		String result = new String(output.toByteArray());
+		OutputStream out = null;
+	
+		out = new FileOutputStream("uncompressed.txt");
+		out.write(result.getBytes());
+
+		out.close();
+
+	}
+
+	/*********************************************************************
+	  READ COMPRESSED FILE AND SAVE INTO BYTE OUTPUT STREAM
+	 *********************************************************************/
+	private static ByteArrayOutputStream getCompressedData() throws IOException 
+	{
+		InputStream input = new FileInputStream("compressed.txt");
+	
+
 		InflaterInputStream inflator = new InflaterInputStream(input);
-		ByteArrayOutputStream output = new ByteArrayOutputStream(2048);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		
 		int b;
 		
-		try 
+		
+		while((b = inflator.read()) != -1)
 		{
-			while((b = inflator.read()) != -1)
-			{
-				output.write(b);
-			}
-		} 
-		catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			output.write(b);
 		}
 		
-		try 
-		{
-			inflator.close();
-			output.close();
-		} 
-		catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		/*********************************************************************
-		  WRITE BYTE OUTPUT STREAM TO A NEW FILE AS A STRING
-		 *********************************************************************/
-		String result = new String(output.toByteArray());
-		OutputStream out = null;
-		try 
-		{
-			out = new FileOutputStream("uncompressed.txt");
-			out.write(result.getBytes());
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("Exception thrown when opening and writing file: " + e);
-		}
-		
-		try 
-		{
-			out.close();
-		} 
-		catch (IOException e) 
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		inflator.close();
+		output.close();
+
+		return output;
 	}
 
 }

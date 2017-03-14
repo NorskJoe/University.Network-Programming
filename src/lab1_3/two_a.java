@@ -16,64 +16,70 @@ public class two_a {
 
 	public static void main(String[] args) 
 	{
-		InputStream input = null;
-		BufferedReader reader = null;
+		String inputBuffer = null;
 		
 		try 
 		{
-			input = new FileInputStream(new File("console_input.txt"));
-			reader = new BufferedReader(new InputStreamReader(input));
-		} 
-		catch (FileNotFoundException e) 
-		{
-			System.out.println("Exception thrown when opening file: " + e);
-		}
-		
-		String line;
-		String result ="";
-		int lineCount = 0;
-		/******************************************************************
-		  CONTINUE READING THE FILE UNTIL THERE ARE NO MORE LINES TO READ
-		 ******************************************************************/
-		try 
-		{
-			reader.readLine(); // IGNORE THE FIRST LINE
-			while((line = reader.readLine()) != null)
-			{
-				result = result.concat(line + "\n");
-				lineCount++;
-			}
+			inputBuffer = getUncompressedInput();
 		} 
 		catch (IOException e) 
 		{
 			System.out.println("Exception thrown when reading file: " + e);
 		}
 		
-		/**********************************************************************
-		   COMPRESS THE DATA READ IN AND WRITE TO A NEW FILE
-		 **********************************************************************/
-		OutputStream output = null;
-		try 
-		{
-			output = new FileOutputStream("compressed.txt");
-		} 
-		catch (FileNotFoundException e) 
-		{
-			System.out.println("Exception thrown when creating compressed file: " + e);
-		}
-		Deflater d = new Deflater();
-		DeflaterOutputStream deflate = new DeflaterOutputStream(output, d);
 		
 		try 
 		{
-			deflate.write(result.getBytes());
-			deflate.close();
+			compressData(inputBuffer);
 		} 
 		catch (IOException e) 
 		{
-			System.out.println("Exeption thrown when writing compressed data: " + e);
+			System.out.println("Exception thrown when writing compressed file: " + e);
 		}
 		
+		
+	}
+
+	/********************************************************************
+	  TAKES A STRING AS INPUT, FROM getUncompressedInput() AND COMPRESSES
+	  DATA TO A FILE CALLED 'compressed.txt'
+	 * @throws IOException 
+	 ********************************************************************/
+	private static void compressData(String inputBuffer) throws IOException 
+	{
+		OutputStream output = new FileOutputStream("compressed.txt");
+		
+		Deflater d = new Deflater();
+		DeflaterOutputStream deflate = new DeflaterOutputStream(output, d);
+		
+		deflate.write(inputBuffer.getBytes());
+		deflate.close();
+	
+	}
+
+	/*****************************************************************
+	  GETS INPUT FROM AN UNCOMPRESSED FILE CALLED 'console_input.txt'
+	 *****************************************************************/
+	private static String getUncompressedInput() throws IOException 
+	{
+		InputStream input = new FileInputStream(new File("console_input.txt"));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));	
+		
+		String line;
+		String result ="";
+		
+		/******************************************************************
+		  CONTINUE READING THE FILE UNTIL THERE ARE NO MORE LINES TO READ
+		 ******************************************************************/
+		reader.readLine(); // IGNORE THE FIRST LINE
+		while((line = reader.readLine()) != null)
+		{
+			result = result.concat(line + "\n");
+		}
+	
+		reader.close();
+		
+		return result;
 	}
 
 }
