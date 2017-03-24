@@ -12,57 +12,57 @@ public class one_b {
 
 	public static void main(String[] args) 
 	{	
-		InputStream input = null;
-		BufferedReader reader = null;
+		
+		
+		String result = null;
 		
 		try 
 		{
-			input = new FileInputStream(new File("console_input.txt"));
-			reader = new BufferedReader(new InputStreamReader(input));
-		} 
-		catch (FileNotFoundException e) 
-		{
-			System.out.println("Exception thrown when opening file: " + e);
-		}
-		
-		String line;
-		String result ="";
-		int lineCount = 0;
-		/******************************************************************
-		  CONTINUE READING THE FILE UNTIL THERE ARE NO MORE LINES TO READ
-		 ******************************************************************/
-		try 
-		{
-			reader.readLine(); // IGNORE THE FIRST LINE
-			while((line = reader.readLine()) != null)
-			{
-				result = line + "\n";
-				lineCount++;
-			}
+			result = getFileData();
 		} 
 		catch (IOException e) 
 		{
 			System.out.println("Exception thrown when reading file: " + e);
 		}
 		
+		
 		/***************************************************************
 		  OUTPUT TO CONSOLE
 		 ***************************************************************/
-		System.out.println("Number of lines read: " + lineCount);
-		System.out.println(result);
-		
-		/*
-		 * Closing the reader
-		 */
-		try 
-		{
-			reader.close();jhbjh
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("Exception thrown when closing the reader: " + e);
-		}
+		System.out.println("Number of Lines read: " + result);
 
+
+	}
+
+	private static String getFileData() throws IOException 
+	{
+		InputStream input = new FileInputStream(new File("console_input.txt"));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+		
+
+		
+		String line;
+		String buffer ="";
+		int lineCount = 0;
+		/******************************************************************
+		  CONTINUE READING THE FILE UNTIL THERE ARE NO MORE LINES TO READ
+		 ******************************************************************/
+
+		reader.readLine(); // IGNORE THE FIRST LINE
+		while((line = reader.readLine()) != null)
+		{
+			buffer = buffer.concat(line + "\n");
+			lineCount++;
+		}
+		
+		reader.close();
+		
+		/* Inserting line count at the start of the buffer */
+		StringBuilder result = new StringBuilder(buffer);
+		result.insert(0, lineCount + "\n");
+		
+		return result.toString();
+		
 	}
 
 }
