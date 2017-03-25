@@ -4,24 +4,29 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
-public class Client 
+public class Client_two
 {
+	final static int PORT_NUMBER = 12413;
+	
 	public static void main(String arg[])
 	{
 		try
 		{
-			Socket socket = new Socket("127.0.0.1",4444);
-			System.out.println("Client connected to Server");
+			// Setting up socket - connecting to server
+			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
+			Socket socket = new Socket(localAddress, PORT_NUMBER);
+			System.out.printf("The client's local address is %s, using port number %d\n", localAddress, PORT_NUMBER);
 			
+			// Opening an input and output stream for the server to send/receive messages
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 			
-			
+			// 
 			String userInput;
-			FileOutputStream output = new FileOutputStream("client_server.txt");
 			System.out.println("Enter input to send to the server: ");
 			while((userInput = stdIn.readLine()) != null)
 			{
@@ -29,13 +34,13 @@ public class Client
 				{
 					break;
 				}
-				String toServer = "To Server: ";
-				toServer += userInput + "\n";
-				out.println(toServer);
-				output.write(toServer.getBytes());
-				System.out.println(toServer);
+				System.out.print("Message sent to server: ");
+				out.println(userInput);
+				System.out.println(userInput);
+				System.out.print("Response from server: ");
+				System.out.println("'" + in.readLine() + "'");
 			}
-			output.close();
+			socket.close();
 		}
 		catch(Exception e)
 		{

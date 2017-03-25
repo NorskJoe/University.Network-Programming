@@ -7,16 +7,18 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+public class Server_two {
+	
+	final static int PORT_NUMBER = 12413;
 
 	public static void main(String[] args) 
 	{
 		try
 		{			
-			ServerSocket serverSocket = new ServerSocket(4444);
+			ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
 			Socket clientSocket = serverSocket.accept();
 			System.out.println("The client connected to this server has address: ");
-			System.out.println(clientSocket.getInetAddress());
+			System.out.println(clientSocket.getRemoteSocketAddress().toString());
 			
 			/* Code used to communicate with the client */
 			// Open the clients input and output streams
@@ -24,19 +26,23 @@ public class Server {
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			
 			// Loop used to send and receive strings to client
-			String fromClient, toClient;
-			FileOutputStream output = new FileOutputStream("client_server.txt");
+			String fromClient, toClient, fileBuffer = "";
 
 			while((fromClient = in.readLine()) != null)
 			{
-				toClient = "Received from client: ";
-				toClient += fromClient + "\n";
-				toClient.toUpperCase();
-				out.println(toClient);
-				output.write(toClient.getBytes());
-				System.out.println(toClient);
+				System.out.print("Received from client (converted to uppercase): ");
+				fromClient.toUpperCase();
+				System.out.println(fromClient.toUpperCase());
+				out.println(fromClient.toUpperCase());
+				fileBuffer = fileBuffer.concat(fromClient.toUpperCase() + "\n");
 			}
+			FileOutputStream output = new FileOutputStream("client_server.txt");
+			output.write(fileBuffer.getBytes());
+			
+			// Closing streams and sockets
 			output.close();
+			clientSocket.close();
+			serverSocket.close();
 		}
 		catch(Exception e)
 		{
