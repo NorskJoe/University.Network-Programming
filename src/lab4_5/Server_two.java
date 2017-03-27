@@ -31,12 +31,13 @@ public class Server_two {
 			while((fromClient = in.readLine()) != null)
 			{
 				System.out.print("Received from client (converted to uppercase): ");
-				fromClient.toUpperCase();
 				System.out.println(fromClient.toUpperCase());
+				// Sending response back to client
 				out.println(fromClient.toUpperCase());
+				// Adding message to buffer to write to file
 				fileBuffer = fileBuffer.concat(fromClient.toUpperCase() + "\n");
 			}
-			FileOutputStream output = new FileOutputStream("client_server.txt");
+			FileOutputStream output = new FileOutputStream("client_server_q2.txt");
 			output.write(fileBuffer.getBytes());
 			
 			// Closing streams and sockets
