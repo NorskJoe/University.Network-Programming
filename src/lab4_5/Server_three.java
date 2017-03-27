@@ -56,7 +56,7 @@ public class Server_three
 					// Check to see if serverSocket should be closed
 					if(message.trim().toUpperCase().equals("X"))
 					{
-						System.out.print("SUCCESS");
+						connection.close();
 						serverSocket.close();
 						break;
 					}
@@ -67,21 +67,15 @@ public class Server_three
 					fileBuffer = fileBuffer.concat(message.toUpperCase() + "\n");
 					
 					// Sending a compressed response message
-//					String response = "Acknowledging message: ";
-//					response = response.concat("'" + message.toUpperCase() + "'");
-//					Deflater d = new Deflater();
-//					DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
-//					deflate.write(response.getBytes());
+					String response = "Acknowledging message: ";
+					response = response.concat("'" + message.trim().toUpperCase() + "'");
+					Deflater d = new Deflater();
+					DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
+					deflate.write(response.getBytes());
+//					System.out.println("sent message to client: " + response.getBytes());
 					
-					
-					
-					
-					
-					
+					deflate.close();
 					connection.close();		
-
-					
-					
 				}
 				
 			}

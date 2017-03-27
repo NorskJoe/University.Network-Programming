@@ -25,45 +25,50 @@ public class Client_three
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 			String userInput;
 			
+			System.out.print("Enter a message to send to the server: ");
 			while((userInput = stdIn.readLine()) != null)
 			{
+				// New connection is made for each line a user inputs
 				String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
 				Socket connection = new Socket(localAddress, PORT_NUMBER);
-				
-				PrintWriter out = new PrintWriter(connection.getOutputStream(), true);
-//				ByteArrayOutputStream output = new ByteArrayOutputStream();
-//				output.write(userInput.getBytes(), 0, userInput.length());
-				
+				// Setting up output stream to send compressed data
+//				PrintWriter out = new PrintWriter(connection.getOutputStream(), true);
 				Deflater d = new Deflater();
 				DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
 				
+				// Compressing and sending user input
 				deflate.write(userInput.getBytes());
+				deflate.finish();
 				
-				System.out.println("sent to server is (compressed): " + userInput.getBytes());
-								
-//				System.out.print("Response from server: ");
-//				InputStream in = connection.getInputStream();
-//				InflaterInputStream inflator = new InflaterInputStream(in);
-//				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//				byte[] buffer = new byte[1024];
-//				int readBytes;
-//				while((readBytes = inflator.read(buffer)) > 1)
-//				{
-//					// Decompressing message received and printing to screen
-//					baos.write(buffer, 0, readBytes);
-//					String response = new String(buffer);
-//					System.out.print(response.toUpperCase());
-//				}
 				
+				// Waiting for response from server
+				InputStream in = connection.getInputStream();
+				InflaterInputStream inflator = new InflaterInputStream(in);
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				
+				byte[] buffer = new byte[1024];
+				int readBytes;
+				String response = null;
+				while((readBytes = inflator.read()) > 0)
+				{
+					baos.write(readBytes);
+					response = new String(baos.toByteArray());
+					
+				}
+				System.out.println(response);
 				
 				deflate.close();
+				inflator.close();
 				connection.close();
+				
 			}
 		} 
 		catch (IOException e) 
 		{
-			
+			System.out.println("Exception thrown when creating client: " + e);
 		}
 		
 	}
+
+
 }
