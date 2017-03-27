@@ -24,6 +24,7 @@ public class Client_three
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			Deflater d = new Deflater();
 			DeflaterOutputStream deflate = new DeflaterOutputStream(out, d);
+			
 			// Getting the input stream for socket and user input
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
@@ -41,7 +42,7 @@ public class Client_three
 				deflate.write(userInput.getBytes());
 				System.out.println(userInput);
 				System.out.print("Response from server (compressed): ");
-				System.out.println("'" + in.readLine() + "'");
+//				System.out.println("'" + in.readLine() + "'");
 			}
 			socket.close();
 		} 

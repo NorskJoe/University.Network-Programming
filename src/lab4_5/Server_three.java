@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,46 +25,23 @@ public class Server_three
 			System.out.print("The client connected to the server has address: ");
 			System.out.println(socket.getRemoteSocketAddress().toString());
 			
-			// Getting input stream for socket
-			DataInputStream in = new DataInputStream(socket.getInputStream());
-			InflaterInputStream inflate = new InflaterInputStream(in);
 			// Getting output stream for socket
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+	
+			// Getting input stream for socket
+			InputStream in = socket.getInputStream();
+			int bytesRead;
+			byte[] buffer = new byte[1024];
 			
-			// Loop used to send and receive strings to client
-			String fileBuffer = "";
-			int b;
+			OutputStream output = System.out;
 			
-			
-			
-			
-			
-			
-//			while((b = inflate.read()) != -1)
+			while ((bytesRead = in.read(buffer)) != -1)
 			{
-//				System.out.println("entered loop");
-//				ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-//				byteOutput.write(b);
-//				
-//				System.out.print("Received from client (decompressed and converted to uppercase): ");
-//				
-//				String message = new String(byteOutput.toByteArray());
-//				System.out.println(message.toUpperCase());
-				
-				// Sending response to client
-//				out.println(message.toUpperCase());
-//				fileBuffer = fileBuffer.concat(message.toUpperCase() + "\n");
+				output.write(buffer, 0, bytesRead);
 			}
-			System.out.println("left loop");
-			FileOutputStream fileOutput = new FileOutputStream("client_server_q3.txt");
-			fileOutput.write(fileBuffer.getBytes());
 			
-			// Closing all streams and sockets
-			fileOutput.close();
-			socket.close();
-			serverSocket.close();
-			inflate.close();
-			out.close();
+			
+
 		} 
 		catch (IOException e) 
 		{
