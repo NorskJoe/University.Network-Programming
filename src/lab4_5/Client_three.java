@@ -1,13 +1,18 @@
 //package lab4_5;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
+
+
 
 public class Client_three 
 {
@@ -17,34 +22,43 @@ public class Client_three
 	{
 		try 
 		{
-			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
-			Socket socket = new Socket(localAddress, PORT_NUMBER);
-			
-			// Getting the output stream for socket
-			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			Deflater d = new Deflater();
-			DeflaterOutputStream deflate = new DeflaterOutputStream(out, d);
-			
-			// Getting the input stream for socket and user input
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-			
-			// Entering loop that will receive input from user, deflate, and send to server via socket output
 			String userInput;
-			System.out.println("Enter input to send to the server: ");
+			
 			while((userInput = stdIn.readLine()) != null)
 			{
-				if(userInput.equals("x") || userInput.equals("X"))
-				{
-					break;
-				}
-				System.out.print("Message sent to server: ");
+				String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
+				Socket connection = new Socket(localAddress, PORT_NUMBER);
+				
+				PrintWriter out = new PrintWriter(connection.getOutputStream(), true);
+//				ByteArrayOutputStream output = new ByteArrayOutputStream();
+//				output.write(userInput.getBytes(), 0, userInput.length());
+				
+				Deflater d = new Deflater();
+				DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
+				
 				deflate.write(userInput.getBytes());
-				System.out.println(userInput);
-				System.out.print("Response from server (compressed): ");
-//				System.out.println("'" + in.readLine() + "'");
+				
+				System.out.println("sent to server is (compressed): " + userInput.getBytes());
+								
+//				System.out.print("Response from server: ");
+//				InputStream in = connection.getInputStream();
+//				InflaterInputStream inflator = new InflaterInputStream(in);
+//				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//				byte[] buffer = new byte[1024];
+//				int readBytes;
+//				while((readBytes = inflator.read(buffer)) > 1)
+//				{
+//					// Decompressing message received and printing to screen
+//					baos.write(buffer, 0, readBytes);
+//					String response = new String(buffer);
+//					System.out.print(response.toUpperCase());
+//				}
+				
+				
+				deflate.close();
+				connection.close();
 			}
-			socket.close();
 		} 
 		catch (IOException e) 
 		{
