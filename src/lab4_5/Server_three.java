@@ -19,7 +19,7 @@ import java.util.zip.InflaterInputStream;
 
 public class Server_three 
 {
-	final static int PORT_NUMBER = 4444;
+	final static int PORT_NUMBER = 12413;
 
 	public static void main(String[] args) 
 	{
@@ -72,7 +72,6 @@ public class Server_three
 					Deflater d = new Deflater();
 					DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
 					deflate.write(response.getBytes());
-//					System.out.println("sent message to client: " + response.getBytes());
 					
 					deflate.close();
 					connection.close();		
@@ -80,7 +79,6 @@ public class Server_three
 				
 			}
 			
-			// Saving all messages received to a file
 			OutputStream out = new FileOutputStream("client_server_q3.txt");
 			out.write(fileBuffer.getBytes());
 
@@ -90,7 +88,7 @@ public class Server_three
 		} 
 		catch (IOException e) 
 		{
-		
+			System.out.println("Exception thrown when creating server: " + e);
 		}
 		
 

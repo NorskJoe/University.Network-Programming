@@ -16,7 +16,7 @@ import java.util.zip.InflaterInputStream;
 
 public class Client_three 
 {
-	final static int PORT_NUMBER = 4444;
+	final static int PORT_NUMBER = 12413;
 	
 	public static void main(String args[])
 	{
@@ -32,7 +32,6 @@ public class Client_three
 				String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
 				Socket connection = new Socket(localAddress, PORT_NUMBER);
 				// Setting up output stream to send compressed data
-//				PrintWriter out = new PrintWriter(connection.getOutputStream(), true);
 				Deflater d = new Deflater();
 				DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
 				
@@ -40,12 +39,17 @@ public class Client_three
 				deflate.write(userInput.getBytes());
 				deflate.finish();
 				
+				if(userInput.equals("X") || userInput.equals("x"))
+				{
+					deflate.close();
+					connection.close();
+					break;
+				}
 				
 				// Waiting for response from server
 				InputStream in = connection.getInputStream();
 				InflaterInputStream inflator = new InflaterInputStream(in);
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				
 				byte[] buffer = new byte[1024];
 				int readBytes;
 				String response = null;
