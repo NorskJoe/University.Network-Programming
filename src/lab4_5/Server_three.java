@@ -3,8 +3,10 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,6 +26,7 @@ public class Server_three
 		try 
 		{
 			ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
+			String fileBuffer = "";
 			
 			// loop until serverSocket is closed
 			while(!serverSocket.isClosed())
@@ -44,14 +47,24 @@ public class Server_three
 				byte[] buffer = new byte[1024];
 				int readBytes;
 				
-//				System.out.println("read in is: " + inflator.read(buffer));
-				
-				while((readBytes = inflator.read(buffer)) > 1)
+				while((readBytes = inflator.read(buffer)) > 0)
 				{
 					// Decompressing message received and printing to screen
-					baos.write(buffer, 0, readBytes);
+					baos.write(buffer);
 					String message = new String(buffer);
-					System.out.printf("The message received is (converted to uppercase): %s\n", message.toUpperCase());
+					
+					// Check to see if serverSocket should be closed
+					if(message.trim().toUpperCase().equals("X"))
+					{
+						System.out.print("SUCCESS");
+						serverSocket.close();
+						break;
+					}
+					
+					// Print message to screen
+					System.out.printf("The message received is (converted to uppercase): %s", message.toUpperCase());
+					// Add message to fileBuffer to save
+					fileBuffer = fileBuffer.concat(message.toUpperCase() + "\n");
 					
 					// Sending a compressed response message
 //					String response = "Acknowledging message: ";
@@ -60,11 +73,11 @@ public class Server_three
 //					DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
 //					deflate.write(response.getBytes());
 					
-					if(message.equals("X") || message.equals("x"))
-					{
-						System.out.print("the message was an X");
-						serverSocket.close();
-					}
+					
+					
+					
+					
+					
 					connection.close();		
 
 					
@@ -72,6 +85,12 @@ public class Server_three
 				}
 				
 			}
+			
+			// Saving all messages received to a file
+			OutputStream out = new FileOutputStream("client_server_q3.txt");
+			out.write(fileBuffer.getBytes());
+
+			out.close();
 			
 
 		} 
