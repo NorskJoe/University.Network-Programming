@@ -1,4 +1,4 @@
-package lab4_5;
+// package lab4_5;
 
 import java.net.*;
 import java.util.*;
@@ -6,11 +6,11 @@ import static java.lang.System.out;
 
 public class one {
 
-	public static void main(String[] args) throws SocketException, UnknownHostException 
+	public static void main(String[] args) throws SocketException, UnknownHostException
 	{
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        
-        for (NetworkInterface netIf : Collections.list(nets)) 
+
+        for (NetworkInterface netIf : Collections.list(nets))
         {
             out.printf("Display name: %s\n", netIf.getDisplayName());
             out.printf("Name: %s\n", netIf.getName());
@@ -28,14 +28,14 @@ public class one {
         }
     }
 
-    static void displaySubInterfaces(NetworkInterface netIf) throws SocketException 
+    static void displaySubInterfaces(NetworkInterface netIf) throws SocketException
     {
         Enumeration<NetworkInterface> subIfs = netIf.getSubInterfaces();
-        
-        for (NetworkInterface subIf : Collections.list(subIfs)) 
+
+        for (NetworkInterface subIf : Collections.list(subIfs))
         {
             out.printf("\tSub Interface Display name: %s\n", subIf.getDisplayName());
             out.printf("\tSub Interface Name: %s\n", subIf.getName());
         }
      }
-}  
+}

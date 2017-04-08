@@ -1,4 +1,4 @@
-//package lab4_5;
+package lab4_5;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;

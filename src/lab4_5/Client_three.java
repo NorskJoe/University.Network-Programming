@@ -1,4 +1,4 @@
-//package lab4_5;
+package lab4_5;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -14,17 +14,17 @@ import java.util.zip.InflaterInputStream;
 
 
 
-public class Client_three 
+public class Client_three
 {
 	final static int PORT_NUMBER = 12413;
-	
+
 	public static void main(String args[])
 	{
-		try 
+		try
 		{
 			BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 			String userInput;
-			
+
 			System.out.print("Enter a message to send to the server: ");
 			while((userInput = stdIn.readLine()) != null)
 			{
@@ -34,18 +34,18 @@ public class Client_three
 				// Setting up output stream to send compressed data
 				Deflater d = new Deflater();
 				DeflaterOutputStream deflate = new DeflaterOutputStream(connection.getOutputStream(), d);
-				
+
 				// Compressing and sending user input
 				deflate.write(userInput.getBytes());
 				deflate.finish();
-				
+
 				if(userInput.equals("X") || userInput.equals("x"))
 				{
 					deflate.close();
 					connection.close();
 					break;
 				}
-				
+
 				// Waiting for response from server
 				InputStream in = connection.getInputStream();
 				InflaterInputStream inflator = new InflaterInputStream(in);
@@ -57,21 +57,21 @@ public class Client_three
 				{
 					baos.write(readBytes);
 					response = new String(baos.toByteArray());
-					
+
 				}
 				System.out.println(response);
-				
+
 				deflate.close();
 				inflator.close();
 				connection.close();
-				
+
 			}
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			System.out.println("Exception thrown when creating client: " + e);
 		}
-		
+
 	}
 
 
