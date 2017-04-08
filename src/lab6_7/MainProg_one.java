@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 /**
  * Main class that represents main program.  Gets user input and passes it to a thread for display.
+ * Receives user input from thread in a loop and displays it to console.
  *
  */
 public class MainProg_one 
@@ -25,14 +26,32 @@ public class MainProg_one
 		} 
 		catch (IOException e) 
 		{
-			System.out.println("Exception thrown when getting user input: " + e);
+			System.out.println("Exception thrown when getting input in main: " + e);
 		}
 		
 		// Create thread passing the user input
-		Thread_one myThread = new Thread_one(input);
+		Thread_one myThread = new Thread_one(new MainProg_one(), input);
 		// Run the thread
 		myThread.run();
 
+	}
+
+	/**
+	 * Method used to receive data from a thread, will output to console
+	 * @param userInput - the input received in the thread
+	 */
+	public void sendInput(String userInput) 
+	{
+		// Exit if x or X is entered
+		if(userInput.toUpperCase().equals("X"))
+		{
+			System.out.println("You entered an 'x', program closing...");
+			System.exit(0);
+		}
+		else
+		{			
+			System.out.println("Main program: " + userInput);
+		}
 	}
 
 }
