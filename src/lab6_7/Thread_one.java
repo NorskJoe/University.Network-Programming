@@ -13,6 +13,7 @@ public class Thread_one implements Runnable
 	
 	private String input;
 	private MainProg_one instance;
+	private boolean shutdown = false;
 
 	/**
 	 * Constructor for the thread
@@ -40,15 +41,33 @@ public class Thread_one implements Runnable
 		
 		try 
 		{
-			while((userInput = stdIn.readLine()) != null)
+			// Continue to get user input and send to main program, until user enters x or X
+			while((userInput = stdIn.readLine()) != null && !shutdown)
 			{
-				instance.sendInput(userInput);
+				if(userInput.equals("x") || userInput.equals("X"))
+				{
+					// Call shutdown method and return to main program
+					shutdown();
+					return;
+				}
+				else
+				{
+					instance.sendInput(userInput);					
+				}
 			}
 		} 
 		catch (IOException e) 
 		{
 			System.out.println("Exception thrown when getting input in thread: " + e);
 		}
+	}
+	
+	/**
+	 * Method used to stop thread if x or X is entered
+	 */
+	public void shutdown()
+	{
+		shutdown = true;
 	}
 
 }

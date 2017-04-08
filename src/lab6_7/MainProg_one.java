@@ -42,16 +42,7 @@ public class MainProg_one
 	 */
 	public void sendInput(String userInput) 
 	{
-		// Exit if x or X is entered
-		if(userInput.toUpperCase().equals("X"))
-		{
-			System.out.println("You entered an 'x', program closing...");
-			System.exit(0);
-		}
-		else
-		{			
-			System.out.println("Main program: " + userInput);
-		}
+		System.out.println("Main program: " + userInput);
 	}
 
 }
