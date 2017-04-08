@@ -30,7 +30,7 @@ public class MainProg_one
 		}
 		
 		// Create thread passing the user input
-		Thread_one myThread = new Thread_one(new MainProg_one(), input);
+		Thread myThread = new Thread(new Thread_one(new MainProg_one(), input));
 		// Run the thread
 		myThread.run();
 
