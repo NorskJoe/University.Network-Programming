@@ -1,4 +1,4 @@
-package lab6_7;
+ package lab6_7;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,26 +9,26 @@ import java.io.InputStreamReader;
  * Receives user input from thread in a loop and displays it to console.
  *
  */
-public class MainProg_one 
+public class MainProg_one
 {
 
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		String input = null;
-		
+
 		System.out.println("Enter a line of input to send to the thread: ");
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-		
-		try 
+
+		try
 		{
 			// Get a line of user input
 			input = stdIn.readLine();
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			System.out.println("Exception thrown when getting input in main: " + e);
 		}
-		
+
 		// Create thread passing the user input
 		Thread myThread = new Thread(new Thread_one(new MainProg_one(), input));
 		// Run the thread
@@ -40,7 +40,7 @@ public class MainProg_one
 	 * Method used to receive data from a thread, will output to console
 	 * @param userInput - the input received in the thread
 	 */
-	public void sendInput(String userInput) 
+	public void sendInput(String userInput)
 	{
 		System.out.println("Main program: " + userInput);
 	}

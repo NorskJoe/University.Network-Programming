@@ -1,4 +1,4 @@
-package lab6_7;
+ package lab6_7;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
  */
 public class Thread_one implements Runnable
 {
-	
+
 	private String input;
 	private MainProg_one instance;
 	private boolean shutdown = false;
@@ -29,17 +29,17 @@ public class Thread_one implements Runnable
 	/**
 	 * run method called from main program
 	 */
-	public void run() 
+	public void run()
 	{
 		// Print out user input received from main program
 		System.out.println("Thread: " + input);
-		
+
 		// Get new user input to send to main program
 		System.out.println("Enter a line of input to send to the main program: ");
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 		String userInput;
-		
-		try 
+
+		try
 		{
 			// Continue to get user input and send to main program, until user enters x or X
 			while((userInput = stdIn.readLine()) != null && !shutdown)
@@ -52,16 +52,16 @@ public class Thread_one implements Runnable
 				}
 				else
 				{
-					instance.sendInput(userInput);					
+					instance.sendInput(userInput);
 				}
 			}
-		} 
-		catch (IOException e) 
+		}
+		catch (IOException e)
 		{
 			System.out.println("Exception thrown when getting input in thread: " + e);
 		}
 	}
-	
+
 	/**
 	 * Method used to stop thread if x or X is entered
 	 */
