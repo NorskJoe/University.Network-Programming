@@ -1,2 +1,10 @@
-Apr 27, 2017 7:58:19 PM assignment.Server main
-INFO: Server generated number: 0
+Apr 28, 2017 2:50:01 PM assignment.Server main
+INFO: Server generated number: 1
+Apr 28, 2017 2:50:04 PM assignment.Server main
+INFO: Client generated number: 2
+Apr 28, 2017 2:50:08 PM assignment.Server main
+INFO: Client guessed number: 3
+Apr 28, 2017 2:50:08 PM assignment.Server main
+INFO: Difference between sum of random numbers and clients guess is: 0
+Apr 28, 2017 2:50:08 PM assignment.Server main
+INFO: The client won the game!

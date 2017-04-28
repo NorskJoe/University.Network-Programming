@@ -1,12 +1,18 @@
 package assignment;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.InputMismatchException;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * 
@@ -32,16 +38,29 @@ public class Client
 			// get random number to start the game
 			int randomInt = generateNumber();
 			
-			// TODO: put this in a function?
-			// Setup outputstream for sending message to the server
-			OutputStream os = socket.getOutputStream();
-			OutputStreamWriter osw = new OutputStreamWriter(os);
-			BufferedWriter bw = new BufferedWriter(osw);
+			// Setup output/input streams for sending/receiving messages with the server
+			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			
 			// send random number to the server
-			toServer(bw, randomInt);
+			toServer(out, randomInt);
 			
 			// Get guess from the player
+			int guess = getPlayerGuess();
+			
+			// Send players guess to the server
+			toServer(out, guess);
+			
+			// Wait for win/lose status from server
+			String result = in.readLine();
+			if(result.equals("Win"))
+			{
+				System.out.println("You won the game!");
+			}
+			else
+			{
+				System.out.println("You lost the game");
+			}
 			
 		} 
 		catch (IOException e) 
@@ -52,13 +71,31 @@ public class Client
 
 	}
 
+	private static int getPlayerGuess() 
+	{
+		while(true)
+		{			
+			try
+			{
+				System.out.println("Enter your guess for this round: ");
+				Scanner reader = new Scanner(System.in);
+				int guess = reader.nextInt();
+				return guess;			
+			}
+			catch(InputMismatchException e)
+			{
+				System.out.println("Please enter a valid number.");
+			}
+		}
+	}
+
 	/**
 	 * 
 	 * @param bw: a buffered writer output stream to send messages to server
 	 * @param newInt: the number being sent to server
 	 * @throws IOException
 	 */
-	private static void toServer(BufferedWriter bw, int newInt) throws IOException 
+	private static void toServer(PrintWriter bw, int newInt) throws IOException 
 	{
 		String message = newInt + "\n";
 		bw.write(message);

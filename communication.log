@@ -1,2 +1,4 @@
-Apr 27, 2017 7:58:22 PM assignment.Server main
-INFO: Connected to client: /192.168.1.105:54889
+Apr 28, 2017 2:50:04 PM assignment.Server main
+INFO: Connected to client: /192.168.1.105:54294
+Apr 28, 2017 2:50:08 PM assignment.Server main
+INFO: The server is no longer connected to any clients.  Shutting down server.

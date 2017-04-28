@@ -1,9 +1,13 @@
 package assignment;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
@@ -25,7 +29,7 @@ public class Server
 	// port number used to connect to client
 	final static int PORT_NUMBER = 12413;
 	// boolean to stop server from running
-	static boolean shutdown = false;
+	private static boolean shutdown = false;
 		
 	public static void main(String[] args) 
 	{
@@ -38,23 +42,47 @@ public class Server
 			ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
 			
 			// Generate a random number
-			int randomInt = generateNumber();
-			gameLogger.info("Server generated number: " + randomInt);
+			int randomServerInt = generateNumber();
+			gameLogger.info("Server generated number: " + randomServerInt);
 			
+			// A loop that will continue until all guesses are made.  Not necessary for stage 1
 			while(!shutdown)
 			{
 				// Connect to client
 				Socket clientSocket = serverSocket.accept();
 				commLogger.info("Connected to client: " + clientSocket.getRemoteSocketAddress().toString());
 				
-				// Receive message from the client
-				InputStream is = clientSocket.getInputStream();
-				InputStreamReader isr = new InputStreamReader(is);
-				BufferedReader br = new BufferedReader(isr);
+				// TODO: put this in a function?
+				// Setup outputstream for sending message to the client
+				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 				
-				int received = Integer.parseInt(br.readLine());
+				// Get input stream for receiving messages from the client
+				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				
-				gameLogger.info("Client generated number: " + received);
+				// Receive the generated number from the client
+				int randomClientInt = Integer.parseInt(in.readLine());
+				gameLogger.info("Client generated number: " + randomClientInt);
+				
+				// Receive the guess from the client
+				int clientGuess = Integer.parseInt(in.readLine());
+				gameLogger.info("Client guessed number: " + clientGuess);
+				
+				// Game logic
+				int result = Math.abs((randomServerInt + randomClientInt) - clientGuess);
+				gameLogger.info("Difference between sum of random numbers and clients guess is: " + result);
+				if(result < 2) // The client won the round
+				{
+					gameLogger.info("The client won the game!");
+					toClient(out, true);
+				}
+				else
+				{
+					gameLogger.info("The client lost the game!");
+					toClient(out, false);
+				}
+				shutdown();
+				commLogger.info("The server is no longer connected to any clients.  Shutting down server.");
+				serverSocket.close();
 				
 			}
 			
@@ -65,6 +93,24 @@ public class Server
 			e.printStackTrace();
 		}
 
+	}
+
+	private static void toClient(PrintWriter out, boolean won) throws IOException 
+	{
+		if(won)
+		{
+			out.write("Win" + "\n");
+		}
+		else if(!won)
+		{
+			out.write("Lose" + "\n");
+		}
+		out.flush();
+	}
+
+	private static void shutdown() 
+	{
+		shutdown = true;
 	}
 
 	private static int generateNumber() 
