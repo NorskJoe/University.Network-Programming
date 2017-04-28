@@ -65,12 +65,17 @@ public class Client
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("An exception occurred when getting input or output: " + e);
 		}
 
 	}
 
+	/**
+	 * Function that gets a guess (must be an int) from the player.
+	 * Will loop until an int is entered.
+	 * 
+	 * @return: the int input by user
+	 */
 	private static int getPlayerGuess() 
 	{
 		while(true)

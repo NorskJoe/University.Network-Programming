@@ -31,6 +31,11 @@ public class Server
 	// boolean to stop server from running
 	private static boolean shutdown = false;
 		
+	/**
+	 * Main function will control the game loop
+	 * 
+	 * @param args: None
+	 */
 	public static void main(String[] args) 
 	{
 		try 
@@ -52,7 +57,6 @@ public class Server
 				Socket clientSocket = serverSocket.accept();
 				commLogger.info("Connected to client: " + clientSocket.getRemoteSocketAddress().toString());
 				
-				// TODO: put this in a function?
 				// Setup outputstream for sending message to the client
 				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 				
@@ -80,8 +84,8 @@ public class Server
 					gameLogger.info("The client lost the game!");
 					toClient(out, false);
 				}
-				shutdown();
 				commLogger.info("The server is no longer connected to any clients.  Shutting down server.");
+				shutdown();
 				serverSocket.close();
 				
 			}
@@ -89,12 +93,18 @@ public class Server
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("An exception occurred when getting input or output: " + e);
 		}
 
 	}
 
+	/**
+	 * Function that sends messages back to the client indicating if it has won or not
+	 * 
+	 * @param out: the PrintWriter that connected to the clients outputsream
+	 * @param won: boolean value indicating if game is won or lost
+	 * @throws IOException
+	 */
 	private static void toClient(PrintWriter out, boolean won) throws IOException 
 	{
 		if(won)
@@ -108,17 +118,30 @@ public class Server
 		out.flush();
 	}
 
+	/**
+	 * Function that shuts down the game loop.  Not necessary in stage 1.
+	 */
 	private static void shutdown() 
 	{
 		shutdown = true;
 	}
 
+	/**
+	 * @return: a random int between 0 and 2
+	 */
 	private static int generateNumber() 
 	{
 		Random generator = new Random();
 		return generator.nextInt(3);
 	}
 
+	/**
+	 * Function that sets up two loggers for logging game and communications information.
+	 * Loggers will write to two files, using a simple format.
+	 * 
+	 * @throws SecurityException
+	 * @throws IOException
+	 */
 	private static void setupLoggers() throws SecurityException, IOException 
 	{
 		FileHandler comFile = new FileHandler("communication.log");
