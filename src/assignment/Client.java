@@ -17,54 +17,64 @@ import java.util.Scanner;
  * @author Joseph Johnson
  *
  */
-public class Client 
+public class Client implements Runnable
 {
 	// port number used to connect to server
 	final static int PORT_NUMBER = 12413;
-
-	public static void main(String[] args) 
+	
+//	private Socket socket = null;
+	Thread myThread;
+	private int threadID;
+	
+	public Client(int id)
 	{
-		// Setting up socket - connecting to server
-		try 
+		myThread = new Thread(this);
+		threadID = id;
+		myThread.start();
+	}
+	
+//	public Client(Socket socket)
+//	{
+//		this.socket = socket;
+//	}
+	
+	@Override
+	public void run() 
+	{
+		if(gameSignUp(threadID))
 		{
-			// Connecting to the server via a socket
-			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
-			Socket socket = new Socket(localAddress, PORT_NUMBER);
 			
-			// get random number to start the game
-			int randomInt = generateNumber();
-			
-			// Setup output/input streams for sending/receiving messages with the server
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			
-			// send random number to the server
-			toServer(out, randomInt);
-			
-			// Get guess from the player
-			int guess = getPlayerGuess();
-			
-			// Send players guess to the server
-			toServer(out, guess);
-			
-			// Wait for win/lose status from server
-			String result = in.readLine();
-			if(result.equals("Win"))
-			{
-				System.out.println("You won the game!");
-			}
-			else
-			{
-				System.out.println("You lost the game");
-			}
-			socket.close();
-			
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("An exception occurred when getting input or output: " + e);
 		}
+		// TODO Auto-generated method stub
+		// get random number to start the game
+		int randomInt = generateNumber();
+		
+		
+	}
 
+
+	private boolean gameSignUp(int id) 
+	{
+		System.out.printf("Player %d, do you want to play this round? (Y/N)\n", threadID);
+		String response = getPlayerResonse();
+		
+		if(response.equals("N"))
+		{			
+			return false;
+		}
+		else
+			return true;
+	}
+
+	private String getPlayerResonse() 
+	{
+		Scanner reader = new Scanner(System.in);
+		while(!reader.hasNext("[yYnN]"))
+		{
+			System.out.println("Please enter a Y or y for YES, or N or n for NO");
+			reader.next();
+		}
+		return reader.next();
 	}
 
 	/**
@@ -114,5 +124,6 @@ public class Client
 		Random generator = new Random();
 		return generator.nextInt(3);
 	}
+
 
 }

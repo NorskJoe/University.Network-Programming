@@ -25,7 +25,7 @@ public class Server
 	// port number used to connect to client
 	final static int PORT_NUMBER = 12413;
 	// boolean to stop server from running
-	private static boolean shutdown = false;
+	private static boolean gameReady = false;
 		
 	/**
 	 * Main function will control the game loop
@@ -38,51 +38,25 @@ public class Server
 		{
 			// Setup loggers to write to appropriate files
 			setupLoggers();
-
-			// Create socket for server, and listen for any client sockets
-			ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
+			
+			int count = 0;
 			
 			// Generate a random number
 			int randomServerInt = generateNumber();
 			gameLogger.info("Server generated number: " + randomServerInt);
 			
 			// A loop that will continue until all guesses are made.  Not necessary for stage 1
-			while(!shutdown)
+			while(!gameReady)
 			{
-				// Connect to client
-				Socket clientSocket = serverSocket.accept();
-				commLogger.info("Connected to client: " + clientSocket.getRemoteSocketAddress().toString());
+
+				Client client = new Client(count);
+				count++;
 				
-				// Setup outputstream for sending message to the client
-				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-				
-				// Get input stream for receiving messages from the client
-				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				
-				// Receive the generated number from the client
-				int randomClientInt = Integer.parseInt(in.readLine());
-				gameLogger.info("Client generated number: " + randomClientInt);
-				
-				// Receive the guess from the client
-				int clientGuess = Integer.parseInt(in.readLine());
-				gameLogger.info("Client guessed number: " + clientGuess);
-				
-				// Game logic
-				int result = Math.abs((randomServerInt + randomClientInt) - clientGuess);
-				gameLogger.info("Difference between sum of random numbers and clients guess is: " + result);
-				if(result < 2) // The client won the round
+				if(count == 5)
 				{
-					gameLogger.info("The client won the game!");
-					toClient(out, true);
+					gameReady = true;
 				}
-				else
-				{
-					gameLogger.info("The client lost the game!");
-					toClient(out, false);
-				}
-				commLogger.info("The server is no longer connected to any clients.  Shutting down server.");
-				shutdown();
-				serverSocket.close();
+
 				
 			}
 			
@@ -119,7 +93,7 @@ public class Server
 	 */
 	private static void shutdown() 
 	{
-		shutdown = true;
+		gameReady = true;
 	}
 
 	/**
