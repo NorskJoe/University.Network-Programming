@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.*;
 
@@ -26,76 +27,51 @@ public class Server
 	// Loggers used to log all information to relevant log files.  One for communication, one for game information
 	private static final Logger commLogger = Logger.getLogger(Server.class.getName() + "communication");
 	private static final Logger gameLogger = Logger.getLogger(Server.class.getName() + "game");
-	// port number used to connect to client
-	final static int PORT_NUMBER = 12413;
-	// boolean to stop server from running
-	private static boolean shutdown = false;
+
+	// Connection variables
+	final int PORT_NUMBER = 12413;
+	private ServerSocket serverSocket;
+	ArrayList<ServerConnection> connections = new ArrayList<ServerConnection>();
+	private int clientCount = 0;
+	
+	// Game variables
+	private int randomInt;
 		
-	/**
-	 * Main function will control the game loop
-	 * 
-	 * @param args: None
-	 */
+	
 	public static void main(String[] args) 
 	{
-		try 
+		new Server();
+	}
+	
+	public Server()
+	{
+		try
 		{
-			// Setup loggers to write to appropriate files
+			// Setup loggers
 			setupLoggers();
-
-			// Create socket for server, and listen for any client sockets
-			ServerSocket serverSocket = new ServerSocket(PORT_NUMBER);
 			
-			// Generate a random number
-			int randomServerInt = generateNumber();
-			gameLogger.info("Server generated number: " + randomServerInt);
+			// Generate a random int to use for this round
+			randomInt = generateNumber();
+			gameLogger.info(String.format("Server has generated number %d on game start", randomInt));
 			
-			// A loop that will continue until all guesses are made.  Not necessary for stage 1
-			while(!shutdown)
+			// Start server and listen for connections
+			serverSocket = new ServerSocket(PORT_NUMBER);
+			while(true)
 			{
-				// Connect to client
-				Socket clientSocket = serverSocket.accept();
-				commLogger.info("Connected to client: " + clientSocket.getRemoteSocketAddress().toString());
-				
-				// Setup outputstream for sending message to the client
-				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-				
-				// Get input stream for receiving messages from the client
-				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				
-				// Receive the generated number from the client
-				int randomClientInt = Integer.parseInt(in.readLine());
-				gameLogger.info("Client generated number: " + randomClientInt);
-				
-				// Receive the guess from the client
-				int clientGuess = Integer.parseInt(in.readLine());
-				gameLogger.info("Client guessed number: " + clientGuess);
-				
-				// Game logic
-				int result = Math.abs((randomServerInt + randomClientInt) - clientGuess);
-				gameLogger.info("Difference between sum of random numbers and clients guess is: " + result);
-				if(result < 2) // The client won the round
-				{
-					gameLogger.info("The client won the game!");
-					toClient(out, true);
-				}
-				else
-				{
-					gameLogger.info("The client lost the game!");
-					toClient(out, false);
-				}
-				commLogger.info("The server is no longer connected to any clients.  Shutting down server.");
-				shutdown();
-				serverSocket.close();
+				Socket s = serverSocket.accept();
+				ServerConnection connection = new ServerConnection(s, this);
+				new Thread(connection).start();
+				connections.add(connection);
+				clientCount++;
+				commLogger.info(String.format("Server is now connection to client (%s) \n "
+						+ "The total number of clients is now: %d", s.getRemoteSocketAddress(), clientCount));
 				
 			}
-			
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("An exception occurred when getting input or output: " + e);
 		}
-
+		catch(IOException e)
+		{
+			System.out.println("There was an error starting the server: " + e);
+		}
 	}
 
 	/**
@@ -118,13 +94,13 @@ public class Server
 		out.flush();
 	}
 
-	/**
-	 * Function that shuts down the game loop.  Not necessary in stage 1.
-	 */
-	private static void shutdown() 
-	{
-		shutdown = true;
-	}
+//	/**
+//	 * Function that shuts down the game loop.  Not necessary in stage 1.
+//	 */
+//	private static void shutdown() 
+//	{
+//		shutdown = true;
+//	}
 
 	/**
 	 * @return: a random int between 0 and 2

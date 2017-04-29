@@ -21,53 +21,35 @@ import java.util.Scanner;
  * @author Joseph Johnson
  *
  */
-public class Client 
+public class Client implements Runnable
 {
 	// port number used to connect to server
 	final static int PORT_NUMBER = 12413;
-
-	public static void main(String[] args) 
+	
+	Socket socket;
+	
+	public Client(Socket clientSocket)
 	{
-		// Setting up socket - connecting to server
-		try 
+		this.socket = clientSocket;
+	}
+
+	@Override
+	public void run() 
+	{
+		System.out.println("in run()");
+		try
 		{
-			// Connecting to the server via a socket
-			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
-			Socket socket = new Socket(localAddress, PORT_NUMBER);
 			
-			// get random number to start the game
-			int randomInt = generateNumber();
-			
-			// Setup output/input streams for sending/receiving messages with the server
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			
-			// send random number to the server
-			toServer(out, randomInt);
-			
-			// Get guess from the player
-			int guess = getPlayerGuess();
-			
-			// Send players guess to the server
-			toServer(out, guess);
-			
-			// Wait for win/lose status from server
-			String result = in.readLine();
-			if(result.equals("Win"))
-			{
-				System.out.println("You won the game!");
-			}
-			else
-			{
-				System.out.println("You lost the game");
-			}
-			
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("An exception occurred when getting input or output: " + e);
+			toServer(out, 1000);
 		}
-
+		catch(IOException e)
+		{
+			
+		}
+		
 	}
 
 	/**
@@ -116,5 +98,6 @@ public class Client
 		Random generator = new Random();
 		return generator.nextInt(3);
 	}
+
 
 }
