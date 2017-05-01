@@ -10,7 +10,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 import java.util.logging.*;
 
@@ -32,7 +34,8 @@ public class Server
 	final int PORT_NUMBER = 12413;
 	private ServerSocket serverSocket;
 	ArrayList<ServerConnection> connections = new ArrayList<ServerConnection>();
-	private int clientCount = 0;
+	BufferedReader in;
+	PrintWriter out;
 	
 	// Game variables
 	private int randomInt;
@@ -56,17 +59,59 @@ public class Server
 			
 			// Start server and listen for connections
 			serverSocket = new ServerSocket(PORT_NUMBER);
+			int clientCount = 0;
+			int notPlaying = 0;
+			System.out.print("Waiting for players to join...");
 			while(true)
 			{
-				Socket s = serverSocket.accept();
-				ServerConnection connection = new ServerConnection(s, this);
-				new Thread(connection).start();
-				connections.add(connection);
-				clientCount++;
-				commLogger.info(String.format("Server is now connection to client (%s) \n "
-						+ "The total number of clients is now: %d", s.getRemoteSocketAddress(), clientCount));
+				System.out.print("...");
+				serverSocket.setSoTimeout(10000);
+				// Maximum of 5 players allowed
+				if((notPlaying+clientCount) >= 5)
+				{
+					break;
+				}
+				
+				try
+				{					
+					Socket s = serverSocket.accept();
+					in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+					out = new PrintWriter(s.getOutputStream(), true);
+					
+					// Get response from client
+					String response = in.readLine();
+					
+					if(response.toUpperCase().equals("Y"))
+					{
+						ServerConnection connection = new ServerConnection(s, this);
+						new Thread(connection).start();
+						connections.add(connection);
+						clientCount++;
+						commLogger.info(String.format("Server is now connection to client (%s) \n "
+								+ "The total number of clients is now: %d", s.getRemoteSocketAddress(), clientCount));
+						
+					}
+					
+					else
+					{
+						commLogger.info("Client did not want to play the game.");
+						notPlaying++;
+						continue;
+					}
+					
+					
+				}
+				catch(SocketTimeoutException e)
+				{
+					commLogger.info("A client took too long to respond, skipping");
+					notPlaying++;
+					continue;
+				}
+
 				
 			}
+			
+			System.out.println("finished checking for new players");
 		}
 		catch(IOException e)
 		{

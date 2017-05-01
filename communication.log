@@ -1,3 +1,11 @@
-Apr 30, 2017 9:47:52 AM assignment.Server <init>
-INFO: Server is now connection to client (/192.168.1.105:51299) 
- The Total number of clients is: 1
+Apr 30, 2017 12:34:46 PM assignment.Server <init>
+INFO: A client took too long to respond, skipping
+Apr 30, 2017 12:34:48 PM assignment.Server <init>
+INFO: Server is now connection to client (/192.168.1.105:54749) 
+ The total number of clients is now: 1
+Apr 30, 2017 12:35:06 PM assignment.Server <init>
+INFO: A client took too long to respond, skipping
+Apr 30, 2017 12:35:16 PM assignment.Server <init>
+INFO: A client took too long to respond, skipping
+Apr 30, 2017 12:35:26 PM assignment.Server <init>
+INFO: A client took too long to respond, skipping
