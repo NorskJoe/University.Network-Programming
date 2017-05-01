@@ -10,6 +10,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,6 +38,99 @@ public class Server
 	BufferedReader in;
 	PrintWriter out;
 	
+	public static void main(String[] args)
+	{
+		// Set up loggers
+		try {
+			setupLoggers();
+			
+		}  catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// Start server
+		new Server();
+	}
+	
+	public Server()
+	{
+		// Create ServerSocket
+		try {
+			serverSocket = new ServerSocket(PORT_NUMBER);
+			serverSocket.setSoTimeout(15000);
+			
+		} catch (IOException e) {
+			System.out.println("There was an error creating the server: " + e);
+		}
+		
+		/**
+		 *  Receive new connections - up to 5 connections
+		 *  A client has 15 seconds to connect to server
+		 */
+		int attemptedConnections = 0;
+		while(true)
+		{
+			// Terminating while loop check
+			if(attemptedConnections >= 5)
+			{
+				break;
+			}
+			
+			
+			
+			// Wait for client connections
+			Socket clientSocket = null;
+			try {
+				clientSocket = serverSocket.accept();
+				
+			} 
+			catch (SocketTimeoutException e) {
+				// Server took too long to respond - go to start of while loop
+				attemptedConnections++;
+				continue;
+			} 
+			catch (IOException e) {
+				System.out.println("There was an error connecting to a client: " + e);
+			}
+			
+			
+			
+			// Start IO streams for client/server communication
+			try {
+				out = new PrintWriter(clientSocket.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				
+			} 
+			catch (IOException e) {
+				System.out.println("There was an error starting server IO: " + e);
+			}
+			
+			
+			
+			// Ask client if it wants to play this game
+			try {
+				String clientResponse = in.readLine();
+				
+				if(clientResponse.toUpperCase().equals("Y"))
+				{
+					ServerConnection connection = new ServerConnection(clientSocket, this);
+					new Thread(connection).start();
+					connections.add(connection);
+					attemptedConnections++;
+				}
+				else if(clientResponse.toUpperCase().equals("N"))
+				{
+					attemptedConnections++;
+					continue;
+				}
+			} 
+			catch (IOException e) {
+				System.out.println("There was an error receiving a message from the client: " + e);
+			}
+		}
+		
+		
+	}
 
 	/**
 	 * Function that sends messages back to the client indicating if it has won or not
@@ -58,13 +152,6 @@ public class Server
 		out.flush();
 	}
 
-//	/**
-//	 * Function that shuts down the game loop.  Not necessary in stage 1.
-//	 */
-//	private static void shutdown() 
-//	{
-//		shutdown = true;
-//	}
 
 	/**
 	 * @return: a random int between 0 and 2
