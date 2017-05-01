@@ -7,7 +7,7 @@ public class ClientConnection implements Runnable
 	Socket socket;
 	
 	
-	public ClientConnection(Socket socket, ClientTest client)
+	public ClientConnection(Socket socket, Client client)
 	{
 		
 	}
