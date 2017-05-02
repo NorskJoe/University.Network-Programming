@@ -13,6 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 
+ * Class for Question 1 part A
+ * 	Makes a URL connection to target, prints target IP address
+ * 	and prints the first 8 header items and their contents
+ * 
+ * @author s3542413
+ *
+ */
 public class URLConnectionReaderA {
 
 	public static void main(String[] args) throws IOException
@@ -51,7 +60,7 @@ public class URLConnectionReaderA {
 		
 
 		/**
-		 * PAR
+		 * PART A
 		 */
 		// Get all the header fields and store them in a map.  Print out the first
 		// 8 header fields and their values
