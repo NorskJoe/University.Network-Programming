@@ -1,4 +1,5 @@
 //package lab8_9;
+//package lab8_9;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class URLConnectionReader {
+public class URLConnectionReaderA {
 
 	public static void main(String[] args) throws IOException
 	{
@@ -24,7 +25,7 @@ public class URLConnectionReader {
 		// "http://m1-c45n1.csit.rmit.edu.au/~Course/index.php" THIS IS STORED FOR EASIER TESTING/COPY-PASTING
 		try
 		{
-			url = new URL("http://www.rmit.edu.au/");
+			url = new URL("http://m1-c45n1.csit.rmit.edu.au/~Course/index.php");
 			connection = (HttpURLConnection) url.openConnection();
 			connection.connect();
 
@@ -49,7 +50,9 @@ public class URLConnectionReader {
 		System.out.printf("ip address: %s\n", InetAddress.getByName(host).getHostAddress());
 		
 
-		
+		/**
+		 * PAR
+		 */
 		// Get all the header fields and store them in a map.  Print out the first
 		// 8 header fields and their values
 		Map<String, List<String>> headers = connection.getHeaderFields();
@@ -74,7 +77,10 @@ public class URLConnectionReader {
             System.out.println();
         }
         
-        // For part b.  Print out all of the data in the URL
+        
+        /**
+         * PART B
+         */
 //		StringBuilder builder = new StringBuilder();
 //		String line = null;
 //		while ((line = in.readLine()) != null)
