@@ -38,15 +38,21 @@ public class Server
 	BufferedReader in;
 	PrintWriter out;
 	
+	// Game variables
+	private static int randomStart;
+	
 	public static void main(String[] args)
 	{
 		// Set up loggers
 		try {
 			setupLoggers();
 			
-		}  catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		// Generate a random number
+		randomStart = generateNumber();
 		
 		// Start server
 		new Server();
@@ -70,7 +76,8 @@ public class Server
 		int attemptedConnections = 0;
 		while(true)
 		{
-			// Terminating while loop check
+			System.out.println(attemptedConnections);
+			// Terminating while-loop check
 			if(attemptedConnections >= 5)
 			{
 				break;
@@ -83,13 +90,11 @@ public class Server
 			try {
 				clientSocket = serverSocket.accept();
 				
-			} 
-			catch (SocketTimeoutException e) {
+			} catch (SocketTimeoutException e) {
 				// Server took too long to respond - go to start of while loop
 				attemptedConnections++;
 				continue;
-			} 
-			catch (IOException e) {
+			} catch (IOException e) {
 				System.out.println("There was an error connecting to a client: " + e);
 			}
 			
@@ -100,8 +105,7 @@ public class Server
 				out = new PrintWriter(clientSocket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				
-			} 
-			catch (IOException e) {
+			} catch (IOException e) {
 				System.out.println("There was an error starting server IO: " + e);
 			}
 			
@@ -123,11 +127,13 @@ public class Server
 					attemptedConnections++;
 					continue;
 				}
-			} 
-			catch (IOException e) {
+			} catch (IOException e) {
 				System.out.println("There was an error receiving a message from the client: " + e);
 			}
 		}
+		
+		System.out.println("All clients connected for game");
+		System.out.println("Number of players: " + connections.size());
 		
 		
 	}

@@ -1,5 +1,4 @@
-//package lab8_9;
-//package lab8_9;
+package lab8_9;
 
 import java.io.IOException;
 import java.net.JarURLConnection;

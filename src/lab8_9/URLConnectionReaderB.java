@@ -1,4 +1,4 @@
-//package lab8_9;
+package lab8_9;
 
 import java.io.BufferedReader;
 import java.io.IOException;
