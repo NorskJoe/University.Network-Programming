@@ -14,7 +14,12 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.*;
@@ -36,7 +41,10 @@ public class Server
 	// Connection variables
 	final int PORT_NUMBER = 12413;
 	private ServerSocket serverSocket;
-	ArrayList<ServerConnection> connections = new ArrayList<ServerConnection>();
+	HashMap<Integer, ClientConnection> connections = new HashMap<Integer, ClientConnection>();
+	HashMap<Integer, Integer> clientRandomInts = new HashMap<Integer, Integer>();
+	HashMap<Integer, Integer> clientGuesses = new HashMap<Integer, Integer>();
+	HashMap<Integer, BufferedReader> clientInput = new HashMap<Integer, BufferedReader>();
 	BufferedReader in;
 	PrintWriter out;
 	
@@ -79,6 +87,7 @@ public class Server
 		 *  A client has 15 seconds to connect to server
 		 */
 		int attemptedConnections = 0;
+		int threadId = 1;
 		while(true)
 		{
 			// Terminating while-loop check
@@ -121,10 +130,9 @@ public class Server
 				
 				if(clientResponse.toUpperCase().equals("Y"))
 				{
-					ServerConnection connection = new ServerConnection(clientSocket, this);
-					Thread thread = new Thread(connection);
-					thread.start();
-					connections.add(connection);
+					ClientConnection connection = new ClientConnection(threadId, clientSocket, this);
+					connections.put(threadId, connection);
+					threadId++;
 					attemptedConnections++;
 				}
 				else if(clientResponse.toUpperCase().equals("N"))
@@ -139,8 +147,77 @@ public class Server
 		
 		System.out.println("All clients connected for game");
 		System.out.println("Number of players: " + connections.size());
+		// All clients have joined the game.  Start the game
+		try {
+			startGame(executor);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
 		
 		
+	}
+
+	private void startGame(ExecutorService executor) throws IOException 
+	{
+		// Start all the client threads that joined
+		for(ClientConnection connection : connections.values())
+		{
+			executor.execute(connection);
+			
+		}
+		
+		
+		
+//		// Get the input streams for each clientSocket
+//		for (ClientConnection connection : connections.values())
+//		{
+//			Socket s = connection.getSocket();
+//			BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//		}
+//		
+//		for (Map.Entry<Integer, ClientConnection> entry : connections.entrySet()) 
+//		{
+//		    int id = entry.getKey();
+//		    Socket s = entry.getValue().getSocket();
+//		    BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//		    clientInput.put(id, br);
+//		}
+//		
+		
+		
+		// Wait for input from clients
+		boolean receivedAll = false;
+		int numberReceived = 0;
+		while(!receivedAll)
+		{
+			// Terminal check
+			if(numberReceived == connections.size())
+			{
+				receivedAll = true;
+			}
+			
+			
+			// Receive first random number generated
+			
+			String response;
+			while((response = in.readLine()) != null)
+			{
+				StringTokenizer tokeniser = new StringTokenizer(response, "-");
+				int id = Integer.parseInt(tokeniser.nextToken());
+				int random = Integer.parseInt(tokeniser.nextToken());
+				clientRandomInts.put(id, random);
+				numberReceived++;
+			}
+		}
+		
+		for (Map.Entry<Integer, Integer> entry : clientRandomInts.entrySet()) 
+		{
+		    int id = entry.getKey();
+		    int randomInt = entry.getValue();
+		    System.out.printf("for thread id %d, the int is %d\n", id, randomInt);
+		}
 	}
 
 	/**

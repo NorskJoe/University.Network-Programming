@@ -67,15 +67,7 @@ public class Client
 	
 	
 
-	/**
-	 * 
-	 * @return a random int between 0 and 2
-	 */
-	private static int generateNumber() 
-	{
-		Random generator = new Random();
-		return generator.nextInt(3);
-	}
+
 
 	
 }
