@@ -17,7 +17,6 @@ public class Client
 	Socket socket;
 	BufferedReader in;
 	PrintWriter out;
-	ClientConnection cc;
 	
 	// Game variables
 	private int randomStart;

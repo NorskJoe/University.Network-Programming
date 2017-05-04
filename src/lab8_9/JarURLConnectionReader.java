@@ -10,12 +10,18 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class JarURLConnectionReader 
+/**
+ *
+ * Class that will open a jar file, and then
+ * print out the name and size of each entry
+ *
+ */
+public class JarURLConnectionReader
 {
 	private final static String JAR_URL = "jar:http://m1-c45n1.csit.rmit.edu.au/~Course/HelloWorld.jar!/";
-	
-	
-	public static void main(String[] args) 
+
+
+	public static void main(String[] args)
 	{
 		URL url = null;
 		JarURLConnection jarConnection = null;
@@ -26,13 +32,13 @@ public class JarURLConnectionReader
 			jarConnection = (JarURLConnection)url.openConnection();
 			// Get the jar file
 			jarFile = jarConnection.getJarFile();
-		} 
+		}
 		catch (MalformedURLException e) {
 			System.out.println("There was an error with the URL: " + JAR_URL);
 		} catch (IOException e) {
 			System.out.println("There was an error connection to the URL: " + e);
 		}
-		
+
 		// Get all the entries for the jar file
 		Enumeration jarEntries = jarFile.entries();
 		// Iterate over entries, printing out name and size of each
@@ -43,7 +49,7 @@ public class JarURLConnectionReader
 			System.out.printf("Jar entry size: %d\n", entry.getSize());
 			System.out.println();
 		}
-		
+
 	}
 
 }

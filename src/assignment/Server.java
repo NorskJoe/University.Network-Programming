@@ -15,6 +15,8 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.*;
 
 /**
@@ -69,6 +71,9 @@ public class Server
 			System.out.println("There was an error creating the server: " + e);
 		}
 		
+		// Create thread pool of 5 threads to play game
+		ExecutorService executor = Executors.newFixedThreadPool(5);
+		
 		/**
 		 *  Receive new connections - up to 5 connections
 		 *  A client has 15 seconds to connect to server
@@ -76,7 +81,6 @@ public class Server
 		int attemptedConnections = 0;
 		while(true)
 		{
-			System.out.println(attemptedConnections);
 			// Terminating while-loop check
 			if(attemptedConnections >= 5)
 			{
@@ -118,7 +122,8 @@ public class Server
 				if(clientResponse.toUpperCase().equals("Y"))
 				{
 					ServerConnection connection = new ServerConnection(clientSocket, this);
-					new Thread(connection).start();
+					Thread thread = new Thread(connection);
+					thread.start();
 					connections.add(connection);
 					attemptedConnections++;
 				}
