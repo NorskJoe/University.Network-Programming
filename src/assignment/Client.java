@@ -58,11 +58,13 @@ public class Client
 		{
 			out.println(response);
 		}
-		else
+		else if(response.toUpperCase().equals("N"))
 		{
 			out.println(response);
 			System.exit(0);
 		}
+		
+		while(true) {}
 	}
 	
 	

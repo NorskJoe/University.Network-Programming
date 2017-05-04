@@ -44,15 +44,23 @@ public class ClientConnection implements Runnable
 		// Send the random number to the server
 		toServer(out, threadId, randomStartInt);
 		
-		// Wait for a response from the server
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
+		// Wait for a response from the server
 		
 	}
 	
 	private void toServer(PrintWriter out, int id, int msgInt) 
 	{
-		String message = id + "-" + msgInt + "\n";
-		out.write(message);
+		String message = id + "-" + msgInt;
+		out.println(message);
+//		System.out.println("sent " + message + " to the server");
+		out.flush();
 	}
 
 	private void openIO() throws IOException 

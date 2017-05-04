@@ -91,7 +91,7 @@ public class Server
 		while(true)
 		{
 			// Terminating while-loop check
-			if(attemptedConnections >= 5)
+			if(attemptedConnections >= 2)
 			{
 				break;
 			}
@@ -132,6 +132,8 @@ public class Server
 				{
 					ClientConnection connection = new ClientConnection(threadId, clientSocket, this);
 					connections.put(threadId, connection);
+					BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+					clientInput.put(threadId, br);
 					threadId++;
 					attemptedConnections++;
 				}
@@ -147,6 +149,14 @@ public class Server
 		
 		System.out.println("All clients connected for game");
 		System.out.println("Number of players: " + connections.size());
+		
+		// Reset server timeout to infinite
+		try {
+			serverSocket.setSoTimeout(0);
+			
+		} catch (SocketException e1) {
+			e1.printStackTrace();
+		}
 		// All clients have joined the game.  Start the game
 		try {
 			startGame(executor);
@@ -170,23 +180,6 @@ public class Server
 		
 		
 		
-//		// Get the input streams for each clientSocket
-//		for (ClientConnection connection : connections.values())
-//		{
-//			Socket s = connection.getSocket();
-//			BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-//		}
-//		
-//		for (Map.Entry<Integer, ClientConnection> entry : connections.entrySet()) 
-//		{
-//		    int id = entry.getKey();
-//		    Socket s = entry.getValue().getSocket();
-//		    BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-//		    clientInput.put(id, br);
-//		}
-//		
-		
-		
 		// Wait for input from clients
 		boolean receivedAll = false;
 		int numberReceived = 0;
@@ -201,14 +194,20 @@ public class Server
 			
 			// Receive first random number generated
 			
-			String response;
-			while((response = in.readLine()) != null)
+			for (int threadId : connections.keySet())
 			{
-				StringTokenizer tokeniser = new StringTokenizer(response, "-");
-				int id = Integer.parseInt(tokeniser.nextToken());
-				int random = Integer.parseInt(tokeniser.nextToken());
-				clientRandomInts.put(id, random);
-				numberReceived++;
+				BufferedReader in = clientInput.get(threadId);
+				String response = "";
+				
+				while((response = in.readLine()) != null)
+				{
+					StringTokenizer tokeniser = new StringTokenizer(response, "-");
+					int id = Integer.parseInt(tokeniser.nextToken());
+					int random = Integer.parseInt(tokeniser.nextToken());
+					clientRandomInts.put(id, random);
+					numberReceived++;
+				}
+				
 			}
 		}
 		
@@ -268,6 +267,11 @@ public class Server
 		commLogger.setUseParentHandlers(false);
 		gameLogger.setUseParentHandlers(false);
 		
+	}
+
+	public ServerSocket getSocket() 
+	{
+		return serverSocket;
 	}
 
 }
