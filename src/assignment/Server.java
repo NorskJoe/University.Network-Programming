@@ -1,28 +1,22 @@
 package assignment;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * 
@@ -41,7 +35,7 @@ public class Server
 	// Connection variables
 	final int PORT_NUMBER = 12413;
 	private ServerSocket serverSocket;
-	HashMap<Integer, ClientConnection> connections = new HashMap<Integer, ClientConnection>();
+	HashMap<Integer, ServerConnection> connections = new HashMap<Integer, ServerConnection>();
 	HashMap<Integer, Integer> clientRandomInts = new HashMap<Integer, Integer>();
 	HashMap<Integer, Integer> clientGuesses = new HashMap<Integer, Integer>();
 	HashMap<Integer, BufferedReader> clientInput = new HashMap<Integer, BufferedReader>();
@@ -130,7 +124,7 @@ public class Server
 				
 				if(clientResponse.toUpperCase().equals("Y"))
 				{
-					ClientConnection connection = new ClientConnection(threadId, clientSocket, this);
+					ServerConnection connection = new ServerConnection(threadId, clientSocket, this);
 					connections.put(threadId, connection);
 					BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 					clientInput.put(threadId, br);
@@ -172,7 +166,7 @@ public class Server
 	private void startGame(ExecutorService executor) throws IOException 
 	{
 		// Start all the client threads that joined
-		for(ClientConnection connection : connections.values())
+		for(ServerConnection connection : connections.values())
 		{
 			executor.execute(connection);
 			
@@ -194,10 +188,13 @@ public class Server
 			
 			// Receive first random number generated
 			
+			
+			
 			for (int threadId : connections.keySet())
 			{
 				BufferedReader in = clientInput.get(threadId);
 				String response = "";
+				
 				
 				while((response = in.readLine()) != null)
 				{
