@@ -3,37 +3,85 @@ package assignment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Random;
 
 public class ClientConnection implements Runnable
 {
-	int threadId;
-	Socket socket;
-	BufferedReader in;
+	// Connection variables
+	private Socket socket;
 
-	public ClientConnection(int threadId, Socket clientSocket) 
+
+	private Server server;
+	private int threadId;
+	BufferedReader in;
+	PrintWriter out;
+	// Game variables
+	private int randomStartInt;
+
+	public ClientConnection(int threadId, Socket socket, Server server)
 	{
 		this.threadId = threadId;
-		this.socket = clientSocket;
+		this.socket = socket;
+		this.server = server;
 	}
-
+	
 	@Override
 	public void run() 
 	{
+		// First create a random number to start the game
+		randomStartInt = generateNumber();
+		
+		// Set up input and output for server
 		try {
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			openIO();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+		// Send the random number to the server
+		toServer(out, threadId, randomStartInt);
+		
 		try {
-			System.out.println(in.readLine());
-			
-		} catch (IOException e) {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		// Wait for a response from the server
+		
+	}
+	
+	private void toServer(PrintWriter out, int id, int msgInt) 
+	{
+		String message = id + "-" + msgInt;
+		out.println(message);
+//		System.out.println("sent " + message + " to the server");
+		out.flush();
+	}
+
+	private void openIO() throws IOException 
+	{
+		out = new PrintWriter(socket.getOutputStream(), true);
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	}
+
+	/**
+	 * 
+	 * @return a random int between 0 and 2
+	 */
+	private static int generateNumber() 
+	{
+		Random generator = new Random();
+		return generator.nextInt(3);
+	}
+	
+	public Socket getSocket() 
+	{
+		return socket;
 	}
 
 }

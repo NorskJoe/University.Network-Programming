@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Client 
@@ -13,7 +15,7 @@ public class Client
 	// Connection variables
 	final static int PORT_NUMBER = 12413;
 	Socket socket;
-//	BufferedReader in;
+	BufferedReader in;
 	PrintWriter out;
 	
 	// Game variables
