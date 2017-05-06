@@ -38,6 +38,7 @@ public class Server
 	int numberPlayers = 0;
 	int threadId = 1;
 	int randomInt;
+	boolean allPlayersGuessed = false;
 	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
 	HashMap<Integer, Integer> playerGuesses = new HashMap<Integer, Integer>();
 	ArrayList<Integer> generatedInts = new ArrayList<Integer>();
@@ -120,6 +121,7 @@ public class Server
 				e.printStackTrace();
 			}
 		}
+		
 		
 		
 		

@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ServerConnection implements Runnable 
 {
@@ -57,10 +59,24 @@ public class ServerConnection implements Runnable
 		// Get the clients guess for this game
 		int guess = getPlayerGuess();
 		
+		while(!server.allPlayersGuessed)
+		{
+			if(server.playerGuesses.size() == Thread.activeCount()-1)
+			{
+				server.allPlayersGuessed = true;
+			}
+		}
+		
+
 		// Send the guesses to all clients
+		String message = "";
+		for(int i = 1; i <= server.playerGuesses.size(); i++)
+		{
+			message += "Player " + i + " guessed " + server.playerGuesses.get(i) + "\n";
+		}
 		try {
-			String msg = "Player " + id + " guessed " + guess;
-			DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(), msg.getBytes().length, server.group, server.PORT_NUMBER);
+			
+			DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, server.group, server.PORT_NUMBER);
 			server.datagram.send(msgPacket);
 			
 		} catch (IOException e) {
@@ -76,11 +92,11 @@ public class ServerConnection implements Runnable
 		}
 		if(result == guess) // The client won the round
 		{
-			out.println("YOU WON");
+			out.println("YOU WON, the correct answer was: " + result);
 		}
 		else
 		{
-			out.println("YOU LOST");
+			out.println("YOU LOST, the correct answer was: " + result);
 		}
 		
 	}
