@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +40,7 @@ public class Server
 	int randomInt;
 	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
 	HashMap<Integer, Integer> playerGuesses = new HashMap<Integer, Integer>();
+	ArrayList<Integer> generatedInts = new ArrayList<Integer>();
 
 	public static void main(String[] args) 
 	{

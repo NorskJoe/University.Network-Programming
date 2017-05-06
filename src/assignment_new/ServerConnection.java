@@ -48,6 +48,7 @@ public class ServerConnection implements Runnable
 		// Get the random number from the client/player
 		try {
 			randomClientNum = Integer.parseInt(in.readLine());
+			server.generatedInts.add(randomClientNum);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -71,8 +72,12 @@ public class ServerConnection implements Runnable
 		
 		
 		// Calculate the result
-		int result = Math.abs((randomServerNum + randomClientNum) - guess);
-		if(result < 2) // The client won the round
+		int result = server.randomInt;
+		for(int clientInts : server.generatedInts)
+		{
+			result += clientInts;
+		}
+		if(result == guess) // The client won the round
 		{
 			out.println("YOU WON");
 		}
