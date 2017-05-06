@@ -38,6 +38,10 @@ public class ServerConnection implements Runnable
 		}
 		
 		
+		// Tell the player what playerNumber they are and how many players are playing
+		out.println(id);
+		out.println(server.threadMap.size());
+		
 		
 		
 		// Get the random number from the client/player
@@ -50,19 +54,33 @@ public class ServerConnection implements Runnable
 		
 		
 		// Get the clients guess for this game
-		int guess = -1;
-		try {
-			guess = Integer.parseInt(in.readLine());
-			System.out.printf("Player %d guessed %s", id, guess);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		boolean accepted = false;
+		while(!accepted)
+		{			
+			int guess = -1;
+			try {
+				guess = Integer.parseInt(in.readLine());
+				// Check if another player has guessed this
+				if(server.playerGuesses.containsValue(guess))
+				{
+					// Send message back to player, asking to check again
+					out.println("NOT ACCEPTED");
+					continue;
+				}
+				server.playerGuesses.put(id, guess);
+				System.out.printf("Player %d guessed %s\n", id, guess);
+				out.println("ACCEPTED");
+				accepted = true;
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		
 		
 		// Calculate the result
-		int result = Math.abs((randomServerNum + randomClientNum) - guess);
+		int result = Math.abs((randomServerNum + randomClientNum) - server.playerGuesses.get(id));
 		if(result < 2) // The client won the round
 		{
 			out.println("YOU WON");

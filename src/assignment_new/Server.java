@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -31,12 +32,11 @@ public class Server
 	int threadId = 1;
 	int randomInt;
 	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
+	HashMap<Integer, Integer> playerGuesses = new HashMap<Integer, Integer>();
 
 	public static void main(String[] args) 
 	{
 		new Server();
-
-
 		
 	}
 	
@@ -54,7 +54,7 @@ public class Server
 		// Generate random number for server
 		randomInt = generateNumber();
 		
-		// Start server socket and listen for connections
+		// Start server socket 
 		try {
 			startServer();
 			
@@ -62,6 +62,7 @@ public class Server
 			e.printStackTrace();
 		}
 		
+		// Start playing the game/listening for players
 		startGame();
 		
 	}
@@ -75,8 +76,16 @@ public class Server
 
 	private void startGame() 
 	{
-		while(numberPlayers < 2)
+		// Loop that accepts players
+		while(true)
 		{
+			
+			if(numberPlayers >= 5)
+			{
+				break;
+			}
+			
+//			System.out.printf("player count : %d\n", numberPlayers);
 			try {
 				Socket client = serverSocket.accept();
 				Runnable thread = new ServerConnection(threadId, client, randomInt, this);
@@ -84,11 +93,14 @@ public class Server
 				threadId++;
 				numberPlayers++;
 				
+			} catch (SocketTimeoutException e) {
+				System.out.println("The client took too long to respond, they will not play this round");
+				numberPlayers++;
+				continue;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("got players");
 		
 		
 		
@@ -97,6 +109,8 @@ public class Server
 		{
 			executor.execute(connection);
 		}
+		
+		executor.shutdown();
 		
 	}
 

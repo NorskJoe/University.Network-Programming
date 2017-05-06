@@ -69,6 +69,16 @@ public class Client
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
+		// Wait to here player number and total player count
+		try {
+			System.out.println("You are player " + in.readLine());
+			System.out.printf("There are %s players in this round", in.readLine());
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 
 
@@ -79,32 +89,37 @@ public class Client
 		
 		
 		
-		// Wait for signal from server that the game has started
-//		boolean gameReady = false;
-//		String msg = null;
-//		try {
-//			msg = in.readLine();
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		// Check if the game is going ahead (i.e. there are enough players)
-//		if (msg.equals("N"))
-//		{
-//			System.out.println("The game does not have enough players.  Goodbye.");
-//			System.exit(0);
-//		}
-		
-		
 		
 		// Get a guess from the user, and send it to the server
-		int guess = getPlayerGuess();
-		out.println(guess);
+		boolean accepted = false;
+		while(!accepted)
+		{
+			int guess = getPlayerGuess();
+			out.println(guess);
+			// Wait for confirmation that guess is accepted by server
+			try {
+				String response = in.readLine();
+				if(response.equals("ACCEPTED"))
+				{
+					accepted = true;
+				}
+				else
+				{
+					System.out.println("That guess has already been made.");
+					continue;
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
 		
 		
 		// Wait for result of game
 		try {
 			System.out.print(in.readLine());
+			System.exit(0);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -132,9 +147,7 @@ public class Client
 	private static int generateNumber() 
 	{
 		Random generator = new Random();
-		int temp = generator.nextInt(3);
-		System.out.println("client generated: " + temp);
-		return temp;
+		return generator.nextInt(3);
 	}
 
 	private void setupIO() throws IOException 
