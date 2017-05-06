@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
 import java.net.Socket;
 
 public class ServerConnection implements Runnable 
@@ -40,7 +41,7 @@ public class ServerConnection implements Runnable
 		
 		// Tell the player what playerNumber they are and how many players are playing
 		out.println(id);
-		out.println(server.threadMap.size());
+		out.println(Thread.activeCount()-1);
 		
 		
 		
@@ -54,10 +55,40 @@ public class ServerConnection implements Runnable
 		
 		
 		// Get the clients guess for this game
+		int guess = getPlayerGuess();
+		
+		// Send the guess to all clients
+		try {
+			String msg = "Player " + id + " guessed " + guess;
+			DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(), msg.getBytes().length, server.group, server.PORT_NUMBER);
+			server.datagram.send(msgPacket);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		// Calculate the result
+		int result = Math.abs((randomServerNum + randomClientNum) - guess);
+		if(result < 2) // The client won the round
+		{
+			out.println("YOU WON");
+		}
+		else
+		{
+			out.println("YOU LOST");
+		}
+		
+	}
+
+	private int getPlayerGuess() 
+	{
 		boolean accepted = false;
+		int guess = -1;
 		while(!accepted)
 		{			
-			int guess = -1;
 			try {
 				guess = Integer.parseInt(in.readLine());
 				// Check if another player has guessed this
@@ -76,20 +107,7 @@ public class ServerConnection implements Runnable
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
-		// Calculate the result
-		int result = Math.abs((randomServerNum + randomClientNum) - server.playerGuesses.get(id));
-		if(result < 2) // The client won the round
-		{
-			out.println("YOU WON");
-		}
-		else
-		{
-			out.println("YOU LOST");
-		}
-		
+		return guess;
 	}
 
 	private void setupIO() throws IOException 

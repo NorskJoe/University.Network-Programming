@@ -3,9 +3,13 @@ package assignment_new;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -26,6 +30,8 @@ public class Server
 	BufferedReader in;
 	PrintWriter out;
 	ExecutorService executor = Executors.newFixedThreadPool(3);
+	DatagramSocket datagram;
+	InetAddress group;
 	
 	// Game variables
 	int numberPlayers = 0;
@@ -50,6 +56,17 @@ public class Server
 			e.printStackTrace();
 		}
 
+		try {
+			datagram = new DatagramSocket();
+			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
+			
+			group = InetAddress.getByName("224.0.0.3");
+			
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 		
 		// Generate random number for server
 		randomInt = generateNumber();

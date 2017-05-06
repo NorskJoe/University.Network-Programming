@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
@@ -16,6 +18,8 @@ public class Client
 	Socket socket;
 	BufferedReader in;
 	PrintWriter out;
+	InetAddress group;
+	MulticastSocket multicast;
 	
 	// Game variables
 	private int randomStart;
@@ -55,6 +59,9 @@ public class Client
 		try {
 			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
 			socket = new Socket(localAddress, PORT_NUMBER);
+			group = InetAddress.getByName("224.0.0.3");
+			multicast = new MulticastSocket(PORT_NUMBER);
+			multicast.joinGroup(group);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -74,7 +81,7 @@ public class Client
 		// Wait to here player number and total player count
 		try {
 			System.out.println("You are player " + in.readLine());
-			System.out.printf("There are %s players in this round", in.readLine());
+			System.out.printf("There are %s players in this round\n", in.readLine());
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -92,10 +99,25 @@ public class Client
 		
 		// Get a guess from the user, and send it to the server
 		boolean accepted = false;
+		
 		while(!accepted)
 		{
+			
+
 			int guess = getPlayerGuess();
 			out.println(guess);
+				
+			
+			
+			try {
+				String msg = receivePacket();
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+			
+			
 			// Wait for confirmation that guess is accepted by server
 			try {
 				String response = in.readLine();
@@ -125,6 +147,16 @@ public class Client
 			e.printStackTrace();
 		}
 		 
+	}
+
+	private String receivePacket() throws IOException 
+	{
+		byte[] buffer = new byte[256];
+		DatagramPacket msgPacket = new DatagramPacket(buffer, buffer.length);
+		multicast.receive(msgPacket);
+		String msg = new String(buffer, 0, buffer.length);
+		return msg;
+			
 	}
 
 	private int getPlayerGuess() 
