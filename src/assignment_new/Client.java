@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -62,6 +63,7 @@ public class Client
 			group = InetAddress.getByName("224.0.0.3");
 			multicast = new MulticastSocket(PORT_NUMBER);
 			multicast.joinGroup(group);
+			multicast.setSoTimeout(5*1000);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -102,6 +104,7 @@ public class Client
 		
 		while(!accepted)
 		{
+
 			
 
 			int guess = getPlayerGuess();
@@ -109,12 +112,6 @@ public class Client
 				
 			
 			
-			try {
-				String msg = receivePacket();
-				
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
 			
 			
 			
@@ -135,6 +132,16 @@ public class Client
 				e.printStackTrace();
 			}
 			
+		}
+		
+		try {
+			String msg = receivePacket();
+			System.out.println(msg);
+
+		} catch (SocketTimeoutException e) {
+			System.out.println("Nothing to receive");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 		
@@ -159,7 +166,7 @@ public class Client
 			
 	}
 
-	private int getPlayerGuess() 
+	private synchronized int getPlayerGuess() 
 	{
 		int guess;
 		Scanner scanner = new Scanner(System.in);

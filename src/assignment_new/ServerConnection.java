@@ -54,11 +54,10 @@ public class ServerConnection implements Runnable
 			e.printStackTrace();
 		}
 		
-		
 		// Get the clients guess for this game
 		int guess = getPlayerGuess();
 		
-		// Send the guess to all clients
+		// Send the guesses to all clients
 		try {
 			String msg = "Player " + id + " guessed " + guess;
 			DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(), msg.getBytes().length, server.group, server.PORT_NUMBER);
@@ -67,8 +66,6 @@ public class ServerConnection implements Runnable
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
 		
 		
 		// Calculate the result
@@ -88,7 +85,7 @@ public class ServerConnection implements Runnable
 		
 	}
 
-	private int getPlayerGuess() 
+	private synchronized int getPlayerGuess() 
 	{
 		boolean accepted = false;
 		int guess = -1;
@@ -104,7 +101,7 @@ public class ServerConnection implements Runnable
 					continue;
 				}
 				server.playerGuesses.put(id, guess);
-				System.out.printf("Player %d guessed %s\n", id, guess);
+//				System.out.printf("Player %d guessed %s\n", id, guess);
 				out.println("ACCEPTED");
 				accepted = true;
 				

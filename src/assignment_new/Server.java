@@ -99,7 +99,7 @@ public class Server
 		while(true)
 		{
 			
-			if(numberPlayers >= 5)
+			if(numberPlayers >= 3)
 			{
 				break;
 			}
