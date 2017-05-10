@@ -1,0 +1,13 @@
+
+
+1:	The server should never terminate, always be running
+
+2:	Guesses should be multicast as they are made.  Client will need a threat to listen to messages
+
+3:	Make local copy of maps, before they are cleared
+
+4:	Clients can join and play any time, during or after round.  They will play in the next available game
+
+5:	Make multicast method in server?  Called from thread
+
+7:	

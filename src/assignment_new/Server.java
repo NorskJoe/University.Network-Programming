@@ -38,6 +38,7 @@ public class Server
 	int numberPlayers = 0;
 	int threadId = 1;
 	int randomInt;
+	int playerCount = 0;
 	boolean allPlayersGuessed = false;
 	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
 	HashMap<Integer, Integer> playerGuesses = new HashMap<Integer, Integer>();
@@ -97,10 +98,11 @@ public class Server
 	private void startGame() 
 	{
 		// Loop that accepts players
+		numberPlayers = 0;
 		while(true)
 		{
 			
-			if(numberPlayers >= 3)
+			if(numberPlayers >= 5)
 			{
 				break;
 			}
@@ -125,13 +127,14 @@ public class Server
 		
 		
 		
+		
 		// All players joined, execute thread for each client
 		for(Runnable connection : threadMap.values())
 		{
 			executor.execute(connection);
 		}
 		
-		executor.shutdown();
+//		executor.shutdown();
 		
 	}
 

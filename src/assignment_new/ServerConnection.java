@@ -33,6 +33,7 @@ public class ServerConnection implements Runnable
 	public void run() 
 	{
 		// Start the streams for this client
+//		server.playerCount++;
 		try {
 			setupIO();
 			
@@ -59,6 +60,20 @@ public class ServerConnection implements Runnable
 		// Get the clients guess for this game
 		int guess = getPlayerGuess();
 		
+		
+		// Send the guess to all clients
+		String message = "Player " + id + " guessed " + guess +"\n";
+		
+		try {
+			DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, server.group, server.PORT_NUMBER);
+			server.datagram.send(msgPacket);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		// Wait for all the other clients to guess
 		while(!server.allPlayersGuessed)
 		{
 			if(server.playerGuesses.size() == Thread.activeCount()-1)
@@ -66,22 +81,12 @@ public class ServerConnection implements Runnable
 				server.allPlayersGuessed = true;
 			}
 		}
+		// Reset boolean for next round
+//		server.allPlayersGuessed = false;
+		// Clear map for next round
+//		server.playerGuesses.clear();
 		
 
-		// Send the guesses to all clients
-		String message = "";
-		for(int i = 1; i <= server.playerGuesses.size(); i++)
-		{
-			message += "Player " + i + " guessed " + server.playerGuesses.get(i) + "\n";
-		}
-		try {
-			
-			DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, server.group, server.PORT_NUMBER);
-			server.datagram.send(msgPacket);
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		
 		
 		// Calculate the result
@@ -98,6 +103,8 @@ public class ServerConnection implements Runnable
 		{
 			out.println("YOU LOST, the correct answer was: " + result);
 		}
+//		server.generatedInts.clear();
+		
 		
 	}
 

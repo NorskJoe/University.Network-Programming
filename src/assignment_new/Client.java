@@ -48,8 +48,8 @@ public class Client
 			System.out.println("You selected not to play this game.  Goodbye");
 			System.exit(0);
 		}
-
-		playGame();
+		else
+			playGame();
 
 	}
 
@@ -97,6 +97,19 @@ public class Client
 
 
 
+		// Start a thread that will listen for datagram packets
+		new Thread() {
+			public void run() {
+				try {
+					listenForDatagram();
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+
+
 
 
 		// Get a guess from the user, and send it to the server
@@ -128,16 +141,6 @@ public class Client
 		}
 		scanner.close();
 
-		
-		// Receive datagram packet from server with all player guesses
-		try {
-			System.out.println(receivePacket());
-
-		} catch (SocketTimeoutException e) {
-			System.out.println("Nothing to receive");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 
 		// Wait for result of game
@@ -149,6 +152,15 @@ public class Client
 			e.printStackTrace();
 		}
 
+	}
+
+	private void listenForDatagram() throws IOException 
+	{
+		while(true)
+		{
+			System.out.println(receivePacket());
+		}
+		
 	}
 
 	private String receivePacket() throws IOException 
