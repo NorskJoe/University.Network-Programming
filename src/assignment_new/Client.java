@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -24,6 +25,7 @@ public class Client
 
 	// Game variables
 	private int randomStart;
+	private String id;
 
 
 	public static void main(String[] args)
@@ -35,21 +37,21 @@ public class Client
 	{
 		// Ask the player if they want to play this game
 		Scanner stdIn = new Scanner(System.in);
-		System.out.println("Do you want to play in this round?");
-		while (!stdIn.hasNext("[YyNn]"))
-		{
-			System.out.println("Please enter a 'Y' or 'y' for YES, or a 'N' or 'n' for NO");
-			stdIn.next();
-		}
-		String response = stdIn.next();
-		/* IF NO, DO NOT ATTEMPT TO CONNECT TO SERVER */
-		if(response.toUpperCase().equals("N"))
-		{
-			System.out.println("You selected not to play this game.  Goodbye");
-			System.exit(0);
-		}
-		else
-			playGame();
+		System.out.println("What is your name or ID?");
+//		while (!stdIn.hasNext("[YyNn]"))
+//		{
+//			System.out.println("Please enter a 'Y' or 'y' for YES, or a 'N' or 'n' for NO");
+//			stdIn.next();
+//		}
+		id = stdIn.next();
+//		/* IF NO, DO NOT ATTEMPT TO CONNECT TO SERVER */
+//		if(response.toUpperCase().equals("N"))
+//		{
+//			System.out.println("You selected not to play this game.  Goodbye");
+//			System.exit(0);
+//		}
+//		else
+		playGame();
 
 	}
 
@@ -63,13 +65,12 @@ public class Client
 			group = InetAddress.getByName("224.0.0.3");
 			multicast = new MulticastSocket(PORT_NUMBER);
 			multicast.joinGroup(group);
-			//			multicast.setSoTimeout(5*1000);
+			
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
+		
 
 		// Setup IO streams for this client
 		try {
@@ -78,11 +79,14 @@ public class Client
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
+		//  Send your player name /id
+		out.println(id);
+		
 
-
-		// Wait to here player number and total player count
+		// Listen to how many players are in this game
 		try {
-			System.out.println("You are player " + in.readLine());
 			System.out.printf("There are %s players in this round\n", in.readLine());
 
 		} catch (IOException e) {
@@ -176,7 +180,7 @@ public class Client
 	private synchronized int getPlayerGuess(Scanner scanner) 
 	{
 		int guess;
-		System.out.println("Enter your guess for this game: ");
+		System.out.println(id + ", enter your guess for this game: ");
 		while(!scanner.hasNextInt())
 		{
 			scanner.next();

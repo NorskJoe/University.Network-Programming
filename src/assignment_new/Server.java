@@ -35,14 +35,17 @@ public class Server
 	InetAddress group;
 	
 	// Game variables
+	int count;
+	boolean allFinished = false;
 	int numberPlayers = 0;
 	int threadId = 1;
 	int randomInt;
-	int playerCount = 0;
+//	int playerCount = 0;
 	boolean allPlayersGuessed = false;
-	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
-	HashMap<Integer, Integer> playerGuesses = new HashMap<Integer, Integer>();
+//	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
+	HashMap<String, Integer> playerGuesses = new HashMap<String, Integer>();
 	ArrayList<Integer> generatedInts = new ArrayList<Integer>();
+	ArrayList<Runnable> clients = new ArrayList<Runnable>();
 
 	public static void main(String[] args) 
 	{
@@ -62,7 +65,7 @@ public class Server
 
 		try {
 			datagram = new DatagramSocket();
-			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
+//			String localAddress = InetAddress.getLocalHost().getHostAddress().toString();
 			
 			group = InetAddress.getByName("224.0.0.3");
 			
@@ -110,9 +113,8 @@ public class Server
 //			System.out.printf("player count : %d\n", numberPlayers);
 			try {
 				Socket client = serverSocket.accept();
-				Runnable thread = new ServerConnection(threadId, client, randomInt, this);
-				threadMap.put(threadId, thread);
-				threadId++;
+				Runnable thread = new ServerConnection(client, randomInt, this);
+				clients.add(thread);
 				numberPlayers++;
 				
 			} catch (SocketTimeoutException e) {
@@ -129,7 +131,7 @@ public class Server
 		
 		
 		// All players joined, execute thread for each client
-		for(Runnable connection : threadMap.values())
+		for(Runnable connection : clients)
 		{
 			executor.execute(connection);
 		}

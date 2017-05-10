@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ServerConnection implements Runnable 
 {
-	int id;
+	String id;
 	Socket client;
 	Server server;
 	
@@ -21,9 +21,8 @@ public class ServerConnection implements Runnable
 	int randomClientNum;
 	int randomServerNum;
 
-	public ServerConnection(int threadId, Socket client, int randomInt, Server server) 
+	public ServerConnection(Socket client, int randomInt, Server server) 
 	{
-		this.id = threadId;
 		this.client = client;
 		this.randomServerNum = randomInt;
 		this.server = server;
@@ -42,8 +41,17 @@ public class ServerConnection implements Runnable
 		}
 		
 		
-		// Tell the player what playerNumber they are and how many players are playing
-		out.println(id);
+		// Get the player id
+		try {
+			id = in.readLine();
+			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		// Tell the player how many players are playing
+//		out.println(id);
 		out.println(Thread.activeCount()-1);
 		
 		
@@ -61,7 +69,7 @@ public class ServerConnection implements Runnable
 		int guess = getPlayerGuess();
 		
 		
-		// Send the guess to all clients
+		// Send the guess to all clients by multicasting
 		String message = "Player " + id + " guessed " + guess +"\n";
 		
 		try {
@@ -82,12 +90,11 @@ public class ServerConnection implements Runnable
 			}
 		}
 		// Reset boolean for next round
-//		server.allPlayersGuessed = false;
+		server.allPlayersGuessed = false;
 		// Clear map for next round
 //		server.playerGuesses.clear();
 		
 
-		
 		
 		// Calculate the result
 		int result = server.randomInt;
@@ -105,6 +112,18 @@ public class ServerConnection implements Runnable
 		}
 //		server.generatedInts.clear();
 		
+		System.out.println("active count: " + (Thread.activeCount()-1));
+		server.count = Thread.activeCount() -1;
+		server.count--;
+		System.out.println("decremented one: " + server.count);
+		while(!server.allFinished)
+		{
+//			System.out.println("thread count: " + server.count);
+			if(server.count == 0)
+			{
+				break;
+			}
+		}
 		
 	}
 
@@ -124,7 +143,6 @@ public class ServerConnection implements Runnable
 					continue;
 				}
 				server.playerGuesses.put(id, guess);
-//				System.out.printf("Player %d guessed %s\n", id, guess);
 				out.println("ACCEPTED");
 				accepted = true;
 				
