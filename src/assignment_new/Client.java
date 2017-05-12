@@ -158,7 +158,7 @@ public class Client
 		}
 		
 		// Client/Player will now terminate
-
+		
 	}
 
 	
@@ -171,7 +171,7 @@ public class Client
 	{
 		while(true)
 		{
-			System.out.println(receivePacket());
+			System.out.println("Multicast: " + receivePacket());
 		}
 		
 	}

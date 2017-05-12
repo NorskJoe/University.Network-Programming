@@ -1,0 +1,54 @@
+May 12, 2017 9:22:55 PM assignment_new.Server <init>
+INFO: Server generated the random number: 2
+May 12, 2017 9:23:14 PM assignment_new.Server startGame
+INFO: The game has enough players.  Starting a game.
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: b is playing in this round
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: c is playing in this round
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: There are 3 players in total this round
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: a is playing in this round
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: c generated 2
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: There are 3 players in total this round
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: a generated 0
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: There are 3 players in total this round
+May 12, 2017 9:23:14 PM assignment_new.ServerConnection run
+INFO: b generated 0
+May 12, 2017 9:23:17 PM assignment_new.ServerConnection run
+INFO: a guessed 2 for this round
+May 12, 2017 9:23:21 PM assignment_new.ServerConnection run
+INFO: b guessed 3 for this round
+May 12, 2017 9:23:25 PM assignment_new.ServerConnection run
+INFO: c guessed 4 for this round
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: c won this game
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: c won this game
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: c won this game
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: e is playing in this round
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: There are 2 players in total this round
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: e generated 0
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: d is playing in this round
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: There are 2 players in total this round
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: d generated 2
+May 12, 2017 9:23:34 PM assignment_new.ServerConnection run
+INFO: d guessed 9 for this round
+May 12, 2017 9:23:37 PM assignment_new.ServerConnection run
+INFO: e guessed 10 for this round
+May 12, 2017 9:23:42 PM assignment_new.ServerConnection run
+INFO: d won this game
+May 12, 2017 9:23:42 PM assignment_new.Server startGame
+INFO: This game is finished, waiting for more players.

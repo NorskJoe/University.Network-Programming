@@ -1,0 +1,44 @@
+May 12, 2017 9:22:55 PM assignment_new.Server startServer
+INFO: ServerSocket started
+May 12, 2017 9:22:55 PM assignment_new.Server <init>
+INFO: The server is now listening for connections.
+May 12, 2017 9:23:04 PM assignment_new.Server startGame
+INFO: A player connected to the game
+May 12, 2017 9:23:07 PM assignment_new.Server startGame
+INFO: A player connected to the game
+May 12, 2017 9:23:09 PM assignment_new.Server startGame
+INFO: A player connected to the game
+May 12, 2017 9:23:12 PM assignment_new.Server startGame
+INFO: A player connected to the game
+May 12, 2017 9:23:14 PM assignment_new.Server startGame
+INFO: A player connected to the game
+May 12, 2017 9:23:17 PM assignment_new.ServerConnection run
+INFO: Multicasting player guess to all other players
+May 12, 2017 9:23:21 PM assignment_new.ServerConnection run
+INFO: Multicasting player guess to all other players
+May 12, 2017 9:23:25 PM assignment_new.ServerConnection run
+INFO: Multicasting player guess to all other players
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: Multicasting the winner(s) to all players
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: c is now disconnecting from this game
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: Multicasting the winner(s) to all players
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: a is now disconnecting from this game
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: Multicasting the winner(s) to all players
+May 12, 2017 9:23:30 PM assignment_new.ServerConnection run
+INFO: b is now disconnecting from this game
+May 12, 2017 9:23:34 PM assignment_new.ServerConnection run
+INFO: Multicasting player guess to all other players
+May 12, 2017 9:23:37 PM assignment_new.ServerConnection run
+INFO: Multicasting player guess to all other players
+May 12, 2017 9:23:42 PM assignment_new.ServerConnection run
+INFO: Multicasting the winner(s) to all players
+May 12, 2017 9:23:42 PM assignment_new.ServerConnection run
+INFO: e is now disconnecting from this game
+May 12, 2017 9:23:42 PM assignment_new.ServerConnection run
+INFO: Multicasting the winner(s) to all players
+May 12, 2017 9:23:42 PM assignment_new.ServerConnection run
+INFO: d is now disconnecting from this game

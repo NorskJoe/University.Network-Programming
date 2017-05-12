@@ -55,6 +55,7 @@ public class ServerConnection implements Runnable
 		// Get the player id/name
 		try {
 			name = in.readLine();
+			server.gameLogger.info(name + " is playing in this round");
 			
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -63,6 +64,7 @@ public class ServerConnection implements Runnable
 		
 		// Tell the player how many players are playing
 		out.println(Thread.activeCount()-1);
+		server.gameLogger.info("There are " + (Thread.activeCount()-1) + " players in total this round");
 		
 		
 		
@@ -70,6 +72,7 @@ public class ServerConnection implements Runnable
 		try {
 			randomClientNum = Integer.parseInt(in.readLine());
 			server.generatedInts.add(randomClientNum);
+			server.gameLogger.info(name + " generated " + randomClientNum);
 			
 		} catch (IOException e) {
 			System.out.println("There was a problem receiving the random number from " + name);
@@ -77,12 +80,14 @@ public class ServerConnection implements Runnable
 		
 		// Get the clients guess for this game
 		int guess = getPlayerGuess();
+		server.gameLogger.info(name + " guessed " + guess + " for this round");
 		
 		
 		// Send the guess to all clients by multicasting
 		String message = "Player " + name + " guessed " + guess;
 		try {
 			multicast(message);
+			server.commLogger.info("Multicasting player guess to all other players");
 			
 		} catch (IOException e) {
 			System.out.println("There was a problem sending the multicast message: " + message);
@@ -109,7 +114,6 @@ public class ServerConnection implements Runnable
 		{
 			result += clientInts;
 		}
-		
 		// Calculate the winner
 		findWinner(result, guess);
 		String winners = "\nThe winner(s): "; // used to multicast later
@@ -120,9 +124,11 @@ public class ServerConnection implements Runnable
 		for(int i = 0; i < server.winners.size(); i ++)
 		{
 			winners += server.winners.get(i) + " ";
+			server.gameLogger.info(server.winners.get(i) + " won this game");
 		};
 		try {
 			multicast(winners);
+			server.commLogger.info("Multicasting the winner(s) to all players"); 
 			
 		} catch (IOException e) {
 			System.out.println("There was a problem sending the multicase message: " + winners);
@@ -130,6 +136,7 @@ public class ServerConnection implements Runnable
 		
 		// Make sure all threads are removed from the player map
 		removeThread(id);
+		server.commLogger.info(name + " is now disconnecting from this game");
 		
 	}
 	
@@ -166,9 +173,9 @@ public class ServerConnection implements Runnable
 		// Find a winner by choosing closest guess, if a winner has already been found, all other players lose
 		if(server.winners.size() == 0)
 		{			
+			// Update the closest guess
 			server.closestGuess = findClosestGuess(result, guess);
-			System.out.println("closest guess is: " + server.closestGuess);
-			// wait for all players to calculate closest guess
+			// wait for all players to update closest guess
 			while(true)
 			{
 				System.out.print("");
@@ -177,8 +184,9 @@ public class ServerConnection implements Runnable
 					break;
 				}
 			}
-
-
+			// closestGuess is now accurate
+			
+			// If this player had the closest guess, they win
 			if(server.closestGuess == guess)
 			{
 				String msg = "You won.  The sum was: " + result + ". Your guess was: " + guess;
@@ -200,12 +208,27 @@ public class ServerConnection implements Runnable
 		
 	}
 
+	/**
+	 * Sends out a message using a datagram packet
+	 * 
+	 * @param message - the message to be multicast
+	 * @throws IOException
+	 */
 	private void multicast(String message) throws IOException 
 	{
 		DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, server.group, server.PORT_NUMBER);
 		server.datagram.send(msgPacket);
 	}
 
+	/**
+	 * Function that calculates the number that is closest to sum.
+	 * Function based on code seen at:
+	 * http://stackoverflow.com/questions/13318733/get-closest-value-to-a-number-in-array
+	 * 
+	 * @param result - the sum of all generated numbers
+	 * @param guess - this players guess
+	 * @return (int) the updated closest guess to the sum
+	 */
 	private int findClosestGuess(int result, int guess) 
 	{
 		int currentDistance = Math.abs(result - guess);
@@ -215,18 +238,29 @@ public class ServerConnection implements Runnable
 			server.closestGuess = guess;
 		}
 		server.playerGuesses.remove(name);
-		System.out.println(server.playerGuesses);
 		return server.closestGuess;
 		
 	}
 
+	/**
+	 * Function that removes the current player from the player map, 
+	 * called once all game logic is complete.
+	 * 
+	 * @param id - the id of this thread, will also be the index in the player map
+	 */
 	private void removeThread(int id) 
 	{
 		server.clients.remove(id);
 	}
 	
 
-
+	/**
+	 * 
+	 * Function related to the same one in Client.java.  Communicates with
+	 * client until a valid guess is made.
+	 * 
+	 * @return (int) the guess made by the player
+	 */
 	private int getPlayerGuess() 
 	{
 		boolean accepted = false;
@@ -253,6 +287,11 @@ public class ServerConnection implements Runnable
 		return guess;
 	}
 
+	/**
+	 * Start the IO streams for this server-client connection
+	 * 
+	 * @throws IOException
+	 */
 	private void setupIO() throws IOException 
 	{
 		out = new PrintWriter(client.getOutputStream(), true);

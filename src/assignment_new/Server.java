@@ -13,8 +13,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -31,8 +29,8 @@ import java.util.logging.SimpleFormatter;
 public class Server 
 {
 	// Loggers used to log all information to relevant log files.  One for communication, one for game information
-	private static final Logger commLogger = Logger.getLogger(Server.class.getName() + "communication");
-	private static final Logger gameLogger = Logger.getLogger(Server.class.getName() + "game");
+	final Logger commLogger = Logger.getLogger(Server.class.getName() + "communication");
+	final Logger gameLogger = Logger.getLogger(Server.class.getName() + "game");
 	
 	// Connection variables
 	final int PORT_NUMBER = 12413;
@@ -83,6 +81,7 @@ public class Server
 		
 		// Generate random number for server
 		randomInt = generateNumber();
+		gameLogger.info("Server generated the random number: " + randomInt);
 		
 		// Start server socket 
 		try {
@@ -94,6 +93,7 @@ public class Server
 		
 		
 		// Start playing the game/listening for players
+		commLogger.info("The server is now listening for connections.");
 		startGame();
 		
 	}
@@ -128,13 +128,13 @@ public class Server
 		playerGuesses = new HashMap<String, Integer>();
 		clients = new HashMap<Integer, Thread>();
 		
-		// Loop that accepts players
+		// Loop that accepts players, this loop will not end unless server is force quit
 		while(true)
 		{
 			// Ready to start a game
 			if(attemptedConnection >= 5)
 			{
-				
+				gameLogger.info("The game has enough players.  Starting a game.");
 				// Maximuim of 5 connections at a time, as per specs
 				int numberOfPlayers = clients.size();
 				// Only 3 players can play at once, so seperate game into two rounds
@@ -150,6 +150,7 @@ public class Server
 				}
 				// Reset all the variables for the next game
 				resetGameVariables();
+				gameLogger.info("This game is finished, waiting for more players.");
 
 			}
 			
@@ -159,6 +160,7 @@ public class Server
 				Socket client = serverSocket.accept();
 				Thread thread = new Thread (new ServerConnection(actualConnection, client, randomInt, this));
 				clients.put(actualConnection, thread); // Add each player to the player map
+				commLogger.info("A player connected to the game");
 				attemptedConnection++;
 				actualConnection++;
 				
@@ -278,6 +280,7 @@ public class Server
 	{
 		serverSocket = new ServerSocket(PORT_NUMBER);
 		serverSocket.setSoTimeout(15*1000);
+		commLogger.info("ServerSocket started");
 	}
 
 	/**
