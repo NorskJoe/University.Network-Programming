@@ -101,28 +101,87 @@ public class ServerConnection implements Runnable
 		{
 			result += clientInts;
 		}
-		if(result == guess) // The client won the round
+		
+		// Calculate the winner
+		System.out.println("the sum is: " + result);
+		System.out.printf("thread %d guess is %d: \n", id, guess);
+		
+		
+		
+		// If the guess is exactly right they win, otherwise check for closest guess
+		if(result == guess)
 		{
-			out.println("YOU WON, the correct answer was: " + result);
+			String msg = "You won.  The sum was: " + result + ", your guess was: " + guess;
+			out.println(msg);
+			server.winners.add(name);
+			removeThread(id);
+		}
+
+		
+		// Wait for all threads to see if guess is correct
+		try {
+			Thread.sleep(5*1000);
+		} catch (InterruptedException e) {
+			
+			e.printStackTrace();
+		}
+		
+		
+		if(server.winners.size() == 0)
+		{			
+			server.closestGuess = findClosestGuess(result, guess);
+			
+			// wait for all players to calculate closest guess
+			while(true)
+			{
+				System.out.print("");
+				if(server.playerGuesses.size() == 0)
+				{
+					break;
+				}
+			}
+			
+			
+			if(server.closestGuess == guess)
+			{
+				String msg = "You won.  The sum was: " + result + ". Your guess was: " + guess;
+				out.println(msg);
+			}
+			else
+			{
+				String msg = "You lost.  The sum was: " + result;
+				out.println(msg);
+			}
 		}
 		else
 		{
-			out.println("YOU LOST, the correct answer was: " + result);
+			String msg = "You lost.  The sum was: " + result;
+			out.println(msg);
 		}
 		
-		System.out.println("about to remove in: " + id);
+		
 		removeThread(id);
-//		server.clients.remove(id);
-		System.out.println("removed in: " + id);
 		
 		
 	}
 	
+	private int findClosestGuess(int result, int guess) 
+	{
+		int currentDistance = Math.abs(result - guess);
+		int distance = Math.abs(server.closestGuess - result);
+		if(currentDistance < distance)
+		{
+			server.closestGuess = guess;
+		}
+		server.playerGuesses.remove(name);
+		System.out.println(server.playerGuesses);
+		return server.closestGuess;
+		
+	}
+
 	private synchronized void removeThread(int id) 
 	{
-		System.out.println("removing: " + id);
 		server.clients.remove(id);
-		System.out.println("clients: " + server.clients);
 	}
 	
 

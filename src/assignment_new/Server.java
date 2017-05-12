@@ -44,6 +44,8 @@ public class Server
 	HashMap<String, Integer> playerGuesses = new HashMap<String, Integer>();
 	ArrayList<Integer> generatedInts = new ArrayList<Integer>();
 	int currentRoundPlayerCount;
+	int closestGuess = Integer.MAX_VALUE;
+	ArrayList<String> winners = new ArrayList<String>();
 	
 //	ArrayList<Runnable> clients = new ArrayList<Runnable>();
 
@@ -192,36 +194,25 @@ public class Server
 		
 		
 		
-		
-//		System.out.println("number of players in map: " + clients.size());
-		
-		
-		// All players joined, execute thread for each client
-//		for(Runnable connection : clients)
-//		{
-//			executor.execute(connection);
-//		}
-		
-//		executor.shutdown();
+	
 		
 	}
 
 	private void resetRoundVariables() 
 	{
-		System.out.println("resetting round variables");
 		generatedInts.clear();
 		playerGuesses.clear();
+		closestGuess = Integer.MAX_VALUE;
+		winners.clear();
 		
 	}
 
 	private void resetGameVariables() 
 	{
-		System.out.println("resetting game variables");
+		resetRoundVariables();
+		
 		attemptedConnections = 0;
 		clients.clear();
-		generatedInts.clear();
-		playerGuesses.clear();
-		allPlayersGuessed = false;
 		
 	}
 
