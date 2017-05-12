@@ -1,7 +1,6 @@
 package assignment_new;
 
 import java.io.BufferedReader;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -12,6 +11,13 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
 
+
+/**
+ * Client class represents a player.  Connects to server and plays game.
+ * 
+ * @author Joseph Johnson
+ *
+ */
 public class Client 
 {
 	// Connection variables
@@ -34,17 +40,21 @@ public class Client
 
 	public Client()
 	{
-		
+		// Get the players name for identification purposes.  Name can be anything
 		Scanner stdIn = new Scanner(System.in);
 		System.out.println("What is your name or ID?");
 		
 		id = stdIn.next();
 		playGame();
-//		stdIn.close();
 
 	}
 
 
+	/**
+	 * Main functionality of the class.
+	 * 
+	 * Communicates with server and holds all the player-side game logic
+	 */
 	private void playGame() 
 	{
 		// Connect to server
@@ -70,7 +80,7 @@ public class Client
 		}
 		
 		
-		//  Send your player name /id
+		//  Send your player name /id to the server
 		out.println(id);
 		
 
@@ -91,6 +101,7 @@ public class Client
 
 
 		// Start a thread that will listen for datagram packets
+		// This will run as long as the client is alive and instantly print out any packets it receives.
 		new Thread() {
 			public void run() {
 				try {
@@ -108,6 +119,7 @@ public class Client
 		// Get a guess from the user, and send it to the server
 		boolean accepted = false;
 		Scanner scanner = new Scanner(System.in);
+		// Server will only accept positive ints
 		while(!accepted)
 		{
 			int guess = getPlayerGuess(scanner);
@@ -144,9 +156,17 @@ public class Client
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		// Client/Player will now terminate
 
 	}
 
+	
+	/**
+	 * Prints out any message that are received via datagram packet
+	 * 
+	 * @throws IOException
+	 */
 	private void listenForDatagram() throws IOException 
 	{
 		while(true)
@@ -156,6 +176,13 @@ public class Client
 		
 	}
 
+	/**
+	 * 
+	 * Receives datagram message packets and makes a string out of them
+	 * 
+	 * @return (String) the message that is received 
+	 * @throws IOException
+	 */
 	private String receivePacket() throws IOException 
 	{
 		byte[] buffer = new byte[256];
@@ -166,21 +193,33 @@ public class Client
 
 	}
 
-	private synchronized int getPlayerGuess(Scanner scanner) 
+	/**
+	 * Gets user input, will reject anything that is not a positive int
+	 * 
+	 * @param scanner - the system.in scanner used to get input
+	 * @return (int) the valid guess, i.e. an int greater than 0
+	 */
+	private int getPlayerGuess(Scanner scanner) 
 	{
-		int guess;
-		System.out.println(id + ", enter your guess for this game: ");
-		while(!scanner.hasNextInt())
+		int guess = -1;
+		do
 		{
-			scanner.next();
-		}
-		guess = scanner.nextInt();
+			System.out.println(id + ", enter your guess for this game: ");
+			while(!scanner.hasNextInt())
+			{
+				scanner.next();
+			}
+			guess = scanner.nextInt();
+
+		} while (guess <= 0);
 		return guess;
 	}
 
 	/**
 	 * 
-	 * @return a random int between 0 and 2
+	 * Used to generate a random number to use in the game
+	 * 
+	 * @return (int) a random int between 0 and 2
 	 */
 	private static int generateNumber() 
 	{
@@ -188,6 +227,11 @@ public class Client
 		return generator.nextInt(3);
 	}
 
+	/**
+	 * Sets up the input and output streams for the clients socket
+	 * 
+	 * @throws IOException
+	 */
 	private void setupIO() throws IOException 
 	{
 		out = new PrintWriter(socket.getOutputStream(), true);
