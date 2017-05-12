@@ -35,17 +35,17 @@ public class Server
 	InetAddress group;
 	
 	// Game variables
-	int count;
-	boolean allFinished = false;
-	int numberPlayers = 0;
-	int threadId = 1;
+	int attemptedConnections = 0;
+//	int threadId = 1;
 	int randomInt;
 //	int playerCount = 0;
 	boolean allPlayersGuessed = false;
-//	HashMap<Integer, Runnable> threadMap = new HashMap<Integer, Runnable>();
+	HashMap<Integer, Thread> clients = new HashMap<Integer, Thread>();
 	HashMap<String, Integer> playerGuesses = new HashMap<String, Integer>();
 	ArrayList<Integer> generatedInts = new ArrayList<Integer>();
-	ArrayList<Runnable> clients = new ArrayList<Runnable>();
+	int currentRoundPlayerCount;
+	
+//	ArrayList<Runnable> clients = new ArrayList<Runnable>();
 
 	public static void main(String[] args) 
 	{
@@ -101,25 +101,88 @@ public class Server
 	private void startGame() 
 	{
 		// Loop that accepts players
-		numberPlayers = 0;
+		attemptedConnections = 0;
 		while(true)
 		{
 			
-			if(numberPlayers >= 5)
+			
+			if(attemptedConnections >= 5)
 			{
-				break;
+				boolean gameIsPlaying = true;
+				// TODO: put this in a method
+				// Maximuim of 5 connections at a time, as per specs
+				int numberOfPlayers = clients.size();
+				
+				System.out.println(clients);
+				if(numberOfPlayers >= 3)
+				{
+					currentRoundPlayerCount = 3;
+					// execute the first three only
+					for(int i = 0; i < 3; i++)
+					{
+						clients.get(i).start();
+					}
+					
+					// Wait for all thread in this round to finish
+					while(gameIsPlaying) 
+					{
+						System.out.print("");
+						if(clients.size() == (numberOfPlayers - 3))
+						{				
+//							System.out.println("triggered");
+							break;
+						}
+					}
+					currentRoundPlayerCount = clients.size();
+					resetRoundVariables();
+					// execute the remaining threads
+					for(Thread client : clients.values())
+					{
+						client.start();
+					}
+					
+					// Wait for round to finish
+					while(gameIsPlaying)
+					{
+						if(clients.size() == 0)
+						{
+							break;
+						}
+					}
+				}
+				else // Less than 3 clients joined the game, execute all
+				{
+					currentRoundPlayerCount = clients.size();
+					// Run all the threads
+					for(Thread clients : clients.values())
+					{
+						clients.start();
+					}
+					
+					//  Wait for game to finish
+					while(gameIsPlaying)
+					{
+						if(clients.size() == 0)
+						{
+							break;
+						}
+					}
+				}
+				// Reset all the variables for the next round
+				resetGameVariables();
+
 			}
 			
-//			System.out.printf("player count : %d\n", numberPlayers);
+			
 			try {
 				Socket client = serverSocket.accept();
-				Runnable thread = new ServerConnection(client, randomInt, this);
-				clients.add(thread);
-				numberPlayers++;
+				Thread thread = new Thread (new ServerConnection(attemptedConnections, client, randomInt, this));
+				clients.put(attemptedConnections, thread);
+				attemptedConnections++;
 				
 			} catch (SocketTimeoutException e) {
 				System.out.println("The client took too long to respond, they will not play this round");
-				numberPlayers++;
+				attemptedConnections++;
 				continue;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -130,13 +193,35 @@ public class Server
 		
 		
 		
+//		System.out.println("number of players in map: " + clients.size());
+		
+		
 		// All players joined, execute thread for each client
-		for(Runnable connection : clients)
-		{
-			executor.execute(connection);
-		}
+//		for(Runnable connection : clients)
+//		{
+//			executor.execute(connection);
+//		}
 		
 //		executor.shutdown();
+		
+	}
+
+	private void resetRoundVariables() 
+	{
+		System.out.println("resetting round variables");
+		generatedInts.clear();
+		playerGuesses.clear();
+		
+	}
+
+	private void resetGameVariables() 
+	{
+		System.out.println("resetting game variables");
+		attemptedConnections = 0;
+		clients.clear();
+		generatedInts.clear();
+		playerGuesses.clear();
+		allPlayersGuessed = false;
 		
 	}
 
@@ -158,5 +243,7 @@ public class Server
 		gameLogger.setUseParentHandlers(false);
 		
 	}
+
+
 
 }

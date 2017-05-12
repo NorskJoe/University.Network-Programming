@@ -1,15 +1,14 @@
 package assignment_new;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -35,23 +34,13 @@ public class Client
 
 	public Client()
 	{
-		// Ask the player if they want to play this game
+		
 		Scanner stdIn = new Scanner(System.in);
 		System.out.println("What is your name or ID?");
-//		while (!stdIn.hasNext("[YyNn]"))
-//		{
-//			System.out.println("Please enter a 'Y' or 'y' for YES, or a 'N' or 'n' for NO");
-//			stdIn.next();
-//		}
+		
 		id = stdIn.next();
-//		/* IF NO, DO NOT ATTEMPT TO CONNECT TO SERVER */
-//		if(response.toUpperCase().equals("N"))
-//		{
-//			System.out.println("You selected not to play this game.  Goodbye");
-//			System.exit(0);
-//		}
-//		else
 		playGame();
+//		stdIn.close();
 
 	}
 

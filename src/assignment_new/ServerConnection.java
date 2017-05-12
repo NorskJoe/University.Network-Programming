@@ -11,7 +11,8 @@ import java.util.Map;
 
 public class ServerConnection implements Runnable 
 {
-	String id;
+	String name;
+	int id;
 	Socket client;
 	Server server;
 	
@@ -21,8 +22,9 @@ public class ServerConnection implements Runnable
 	int randomClientNum;
 	int randomServerNum;
 
-	public ServerConnection(Socket client, int randomInt, Server server) 
+	public ServerConnection(int connectionNumber, Socket client, int randomInt, Server server) 
 	{
+		this.id = connectionNumber;
 		this.client = client;
 		this.randomServerNum = randomInt;
 		this.server = server;
@@ -43,7 +45,7 @@ public class ServerConnection implements Runnable
 		
 		// Get the player id
 		try {
-			id = in.readLine();
+			name = in.readLine();
 			
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -70,7 +72,7 @@ public class ServerConnection implements Runnable
 		
 		
 		// Send the guess to all clients by multicasting
-		String message = "Player " + id + " guessed " + guess +"\n";
+		String message = "Player " + name + " guessed " + guess;
 		
 		try {
 			DatagramPacket msgPacket = new DatagramPacket(message.getBytes(), message.getBytes().length, server.group, server.PORT_NUMBER);
@@ -82,17 +84,14 @@ public class ServerConnection implements Runnable
 		
 		
 		// Wait for all the other clients to guess
-		while(!server.allPlayersGuessed)
+		while(true)
 		{
-			if(server.playerGuesses.size() == Thread.activeCount()-1)
+			System.out.print("");
+			if(server.playerGuesses.size() == server.currentRoundPlayerCount)
 			{
-				server.allPlayersGuessed = true;
+				break;
 			}
 		}
-		// Reset boolean for next round
-		server.allPlayersGuessed = false;
-		// Clear map for next round
-//		server.playerGuesses.clear();
 		
 
 		
@@ -110,22 +109,23 @@ public class ServerConnection implements Runnable
 		{
 			out.println("YOU LOST, the correct answer was: " + result);
 		}
-//		server.generatedInts.clear();
 		
-		System.out.println("active count: " + (Thread.activeCount()-1));
-		server.count = Thread.activeCount() -1;
-		server.count--;
-		System.out.println("decremented one: " + server.count);
-		while(!server.allFinished)
-		{
-//			System.out.println("thread count: " + server.count);
-			if(server.count == 0)
-			{
-				break;
-			}
-		}
+		System.out.println("about to remove in: " + id);
+		removeThread(id);
+//		server.clients.remove(id);
+		System.out.println("removed in: " + id);
+		
 		
 	}
+	
+	private synchronized void removeThread(int id) 
+	{
+		System.out.println("removing: " + id);
+		server.clients.remove(id);
+		System.out.println("clients: " + server.clients);
+	}
+	
+
 
 	private synchronized int getPlayerGuess() 
 	{
@@ -142,7 +142,7 @@ public class ServerConnection implements Runnable
 					out.println("NOT ACCEPTED");
 					continue;
 				}
-				server.playerGuesses.put(id, guess);
+				server.playerGuesses.put(name, guess);
 				out.println("ACCEPTED");
 				accepted = true;
 				
