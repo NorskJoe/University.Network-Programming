@@ -14,6 +14,8 @@ public class Client_one {
 	private String localAddress;
 	SocketChannel socketChannel;
 	ByteBuffer buffer;
+	boolean clientIsRunning = true;
+	Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) 
 	{
@@ -40,39 +42,58 @@ public class Client_one {
 		}
 		
 		
-		// Get user input and send it to the server
-		try {
-			sendMessage();
+		// Get user input and send it to the server, and wait for response
+		while(clientIsRunning)
+		{
 			
-		} catch (IOException e) {
-			System.out.println("There was an error sending a message to the server");
+			try {
+				sendMessage();
+//			Thread.sleep(500);
+				receiveResponse();
+				
+			} catch (IOException e) {
+				System.out.println("There was an error sending a message to the server");
+			} //catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		}
+		scanner.close();
 		
+		
+	}
+
+	private void receiveResponse() throws IOException 
+	{
+		System.out.println("receiving a response");
+		if(socketChannel.read(buffer) != -1)
+		{
+			String message = new String(buffer.array()).trim();			
+			System.out.println("Response from server: " + message);
+			buffer.clear();
+		}
 		
 	}
 
 	private void sendMessage() throws IOException 
 	{
-		Scanner scanner = new Scanner(System.in);
-		String message;
 		
-		while((message = scanner.nextLine()) != null)
-		{
+		System.out.println("Enter a message to send to the server:");
+		String message = scanner.nextLine();
 			
-			if(message.toUpperCase().equals("X"))
-			{
-				socketChannel.close();
-				break;
-			}
-			else
-			{
-				buffer = ByteBuffer.wrap(message.getBytes());			
-				socketChannel.write(buffer);
-			}
+		if(message.toUpperCase().equals("X"))
+		{
+			socketChannel.close();
+			clientIsRunning = false;
+		}
+		else
+		{
+			buffer = ByteBuffer.wrap(message.getBytes());			
+			socketChannel.write(buffer);
+			buffer.clear();
 		}
 		
 		
-		scanner.close();
+//		scanner.close();
 	}
 
 	private void openSocket() throws IOException 

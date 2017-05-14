@@ -21,6 +21,7 @@ public class Server_one {
 	ByteBuffer buffer;
 	Selector selector;
 	boolean serverIsRunning = true;
+	String message;
 	
 
 	public static void main(String[] args) 
@@ -66,12 +67,24 @@ public class Server_one {
 		System.out.println("Server received a connection from " + clientSocketChannel.getRemoteAddress());
 		while(serverIsRunning)
 		{
-			printBuffer();
+			receiveMessage();
+			
+			sendResponse();
 		}
 		
 	}
 
-	private void printBuffer() throws IOException 
+	private void sendResponse() throws IOException 
+	{
+		System.out.println("sending the response: " + message);
+		buffer = ByteBuffer.wrap(message.toUpperCase().getBytes());
+//		System.out.println("the buffer contains: " + new String(buffer.array()).trim());
+		clientSocketChannel.write(buffer);
+		buffer.clear();
+		
+	}
+
+	private void receiveMessage() throws IOException 
 	{
 		buffer = ByteBuffer.allocate(256);
 		
@@ -79,29 +92,20 @@ public class Server_one {
 		
 		if(clientSocketChannel.read(buffer) != -1)
 		{
-			//exit
-			String message = new String(buffer.array()).trim();			
+			message = new String(buffer.array()).trim();			
 			System.out.println("Message from client: " + message);
+			buffer.clear();
 		}
 		else
 		{			
-			System.out.println("exit");
+			//exit
+			System.out.println("Server is closing.");
 			serverIsRunning = false;
 			serverSocketChannel.close();
 		}
 		
 		
 			
-		
-		
-
-
-
-		
-//		if(message.toUpperCase().equals("X"))
-//		{
-//			// quit
-//		}
 		
 		
 	}
