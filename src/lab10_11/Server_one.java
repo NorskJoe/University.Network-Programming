@@ -20,6 +20,7 @@ public class Server_one {
 	String localAddress;
 	ByteBuffer buffer;
 	Selector selector;
+	boolean serverIsRunning = true;
 	
 
 	public static void main(String[] args) 
@@ -60,13 +61,11 @@ public class Server_one {
 
 	private void listenForConnections() throws IOException 
 	{
-		boolean serverIsRunning = true;
+		
+		clientSocketChannel = serverSocketChannel.accept(); // This will block until a connection is made
+		System.out.println("Server received a connection from " + clientSocketChannel.getRemoteAddress());
 		while(serverIsRunning)
 		{
-			clientSocketChannel = serverSocketChannel.accept(); // This will block until a connection is made
-			
-			System.out.println("Server received a connection from " + clientSocketChannel.getRemoteAddress());
-			
 			printBuffer();
 		}
 		
@@ -75,11 +74,35 @@ public class Server_one {
 	private void printBuffer() throws IOException 
 	{
 		buffer = ByteBuffer.allocate(256);
-		clientSocketChannel.read(buffer);
 		
-		String message = new String(buffer.array()).trim();
 		
-		System.out.println("Client sent: " + message);
+		
+		if(clientSocketChannel.read(buffer) != -1)
+		{
+			//exit
+			String message = new String(buffer.array()).trim();			
+			System.out.println("Message from client: " + message);
+		}
+		else
+		{			
+			System.out.println("exit");
+			serverIsRunning = false;
+			serverSocketChannel.close();
+		}
+		
+		
+			
+		
+		
+
+
+
+		
+//		if(message.toUpperCase().equals("X"))
+//		{
+//			// quit
+//		}
+		
 		
 	}
 

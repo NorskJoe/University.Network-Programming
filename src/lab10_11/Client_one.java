@@ -54,11 +54,25 @@ public class Client_one {
 	private void sendMessage() throws IOException 
 	{
 		Scanner scanner = new Scanner(System.in);
-		String message = scanner.nextLine();
+		String message;
 		
-		buffer = ByteBuffer.wrap(message.getBytes());
+		while((message = scanner.nextLine()) != null)
+		{
+			
+			if(message.toUpperCase().equals("X"))
+			{
+				socketChannel.close();
+				break;
+			}
+			else
+			{
+				buffer = ByteBuffer.wrap(message.getBytes());			
+				socketChannel.write(buffer);
+			}
+		}
 		
-		socketChannel.write(buffer);
+		
+		scanner.close();
 	}
 
 	private void openSocket() throws IOException 
