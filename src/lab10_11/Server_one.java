@@ -1,25 +1,27 @@
 package lab10_11;
 
 import java.io.IOException;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
 
+/**
+ * Server class runs and listens for connections.  Once it has a connection
+ * it enters a loop receiving messages and sending responses.  Once a received message
+ * is null, it will close.
+ * 
+ * @author Joseph Johnson
+ *
+ */
 public class Server_one {
 	
 	final int PORT_NUMBER = 12413;
 	ServerSocketChannel serverSocketChannel;
 	SocketChannel clientSocketChannel;
 	String localAddress;
-//	ByteBuffer buffer;
-	Selector selector;
 	boolean serverIsRunning = true;
 	String message;
 	
@@ -60,20 +62,33 @@ public class Server_one {
 		}
 	}
 
+	/**
+	 * Main loop for the server.  Listens for connections, then runs a loop
+	 * that will receive messages, and send a response.
+	 * 
+	 * @throws IOException
+	 */
 	private void listenForConnections() throws IOException 
 	{
 		
 		clientSocketChannel = serverSocketChannel.accept(); // This will block until a connection is made
 		System.out.println("Server received a connection from " + clientSocketChannel.getRemoteAddress());
+		// Loop until a null message is received
 		while(serverIsRunning)
 		{
+			// Receive a message from the client
 			receiveMessage();
-			
+			// Send a response to the client
 			sendResponse();
 		}
 		
 	}
 
+	/**
+	 * Send the received message back to the client, converted to upper case
+	 * 
+	 * @throws IOException
+	 */
 	private void sendResponse() throws IOException 
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -83,13 +98,17 @@ public class Server_one {
 		
 	}
 
+	/**
+	 * Wait for a message to be received and save it into the message String variable
+	 * 
+	 * @throws IOException
+	 */
 	private void receiveMessage() throws IOException 
 	{
 		
 		ByteBuffer buffer = ByteBuffer.allocate(256);
 		
-		
-		
+		// If it receives -1, there is nothing in the buffer, i.e. the client quit
 		if(clientSocketChannel.read(buffer) != -1)
 		{
 			message = new String(buffer.array()).trim();			

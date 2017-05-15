@@ -8,22 +8,28 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-public class Client_one {
+/**
+ * Client class sends messages to a server and waits for responses.
+ * If the user inputs and x, the client quits
+ * 
+ * @author Joseph Johnson
+ *
+ */
+public class Client {
 	
 	final int PORT_NUMBER = 12413;
 	private String localAddress;
 	SocketChannel socketChannel;
-//	ByteBuffer buffer;
 	boolean clientIsRunning = true;
 	Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] args) 
 	{
-		new Client_one();
+		new Client();
 
 	}
 	
-	public Client_one()
+	public Client()
 	{
 		// Print client information
 		try {
@@ -48,11 +54,13 @@ public class Client_one {
 			
 			try {
 				sendMessage();
+				// If the user entered an x, break out of loop and quit
 				if(!clientIsRunning)
 				{
 					System.out.println("The client is closing.");
 					break;
 				}
+				// Go to sleep for half a second while the server processes and returns message
 				Thread.sleep(500);
 				receiveResponse();
 
@@ -67,6 +75,11 @@ public class Client_one {
 		
 	}
 
+	/**
+	 * Receives a message from the server and prints to console
+	 * 
+	 * @throws IOException
+	 */
 	private void receiveResponse() throws IOException 
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -79,12 +92,17 @@ public class Client_one {
 		
 	}
 
+	/**
+	 * Receives input from the user, and then sends the input to the client
+	 * 
+	 * @throws IOException
+	 */
 	private void sendMessage() throws IOException 
 	{
 		
 		System.out.println("Enter a message to send to the server:");
 		String message = scanner.nextLine();
-			
+		// if the user enters an x, quit the program
 		if(message.toUpperCase().equals("X"))
 		{
 			socketChannel.close();
@@ -99,9 +117,13 @@ public class Client_one {
 		}
 		
 		
-//		scanner.close();
 	}
 
+	/**
+	 * Connect to the server.  Server must already be running for it to connect
+	 * 
+	 * @throws IOException
+	 */
 	private void openSocket() throws IOException 
 	{
 		socketChannel = SocketChannel.open();
@@ -116,6 +138,11 @@ public class Client_one {
 		
 	}
 
+	/**
+	 * Print the client socket information.
+	 * 
+	 * @throws UnknownHostException
+	 */
 	private void printAddressPort() throws UnknownHostException 
 	{
 		localAddress = InetAddress.getLocalHost().getHostAddress().toString();
