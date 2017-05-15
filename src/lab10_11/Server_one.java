@@ -18,7 +18,7 @@ public class Server_one {
 	ServerSocketChannel serverSocketChannel;
 	SocketChannel clientSocketChannel;
 	String localAddress;
-	ByteBuffer buffer;
+//	ByteBuffer buffer;
 	Selector selector;
 	boolean serverIsRunning = true;
 	String message;
@@ -76,9 +76,8 @@ public class Server_one {
 
 	private void sendResponse() throws IOException 
 	{
-		System.out.println("sending the response: " + message);
+		ByteBuffer buffer = ByteBuffer.allocate(256);
 		buffer = ByteBuffer.wrap(message.toUpperCase().getBytes());
-//		System.out.println("the buffer contains: " + new String(buffer.array()).trim());
 		clientSocketChannel.write(buffer);
 		buffer.clear();
 		
@@ -86,7 +85,8 @@ public class Server_one {
 
 	private void receiveMessage() throws IOException 
 	{
-		buffer = ByteBuffer.allocate(256);
+		
+		ByteBuffer buffer = ByteBuffer.allocate(256);
 		
 		
 		

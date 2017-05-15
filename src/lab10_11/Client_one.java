@@ -13,7 +13,7 @@ public class Client_one {
 	final int PORT_NUMBER = 12413;
 	private String localAddress;
 	SocketChannel socketChannel;
-	ByteBuffer buffer;
+//	ByteBuffer buffer;
 	boolean clientIsRunning = true;
 	Scanner scanner = new Scanner(System.in);
 
@@ -43,19 +43,24 @@ public class Client_one {
 		
 		
 		// Get user input and send it to the server, and wait for response
-		while(clientIsRunning)
+		while(true)
 		{
 			
 			try {
 				sendMessage();
-//			Thread.sleep(500);
+				if(!clientIsRunning)
+				{
+					System.out.println("The client is closing.");
+					break;
+				}
+				Thread.sleep(500);
 				receiveResponse();
-				
+
 			} catch (IOException e) {
 				System.out.println("There was an error sending a message to the server");
-			} //catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		scanner.close();
 		
@@ -64,7 +69,7 @@ public class Client_one {
 
 	private void receiveResponse() throws IOException 
 	{
-		System.out.println("receiving a response");
+		ByteBuffer buffer = ByteBuffer.allocate(256);
 		if(socketChannel.read(buffer) != -1)
 		{
 			String message = new String(buffer.array()).trim();			
@@ -87,6 +92,7 @@ public class Client_one {
 		}
 		else
 		{
+			ByteBuffer buffer = ByteBuffer.allocate(256);
 			buffer = ByteBuffer.wrap(message.getBytes());			
 			socketChannel.write(buffer);
 			buffer.clear();
