@@ -11,6 +11,13 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Second server class uses non-blocking.  Meaning there needs to be checks
+ * on if connections were made or messages were received
+ * 
+ * @author Joseph Johnson
+ *
+ */
 public class Server_two 
 {
 	final int PORT_NUMBER = 12413;
@@ -34,7 +41,7 @@ public class Server_two
 			startServer();
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("There was an error starting the server");
 		}
 		
 		
@@ -44,40 +51,20 @@ public class Server_two
 			listenForMessages();
 			
 		} catch (IOException e) {
-			e.printStackTrace(); 
+			System.out.println("There was an error connecting to the client");
 		}
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+
 		
 		
 	}
 
-//	private void listenForConnections() throws IOException, InterruptedException 
-//	{
-//		while(true)
-//		{
-//			clientSocketChannel = serverSocketChannel.accept(); // this will NOT block until a connection is received
-//			
-//			// client socket is null if no connection was accepted
-//			if(clientSocketChannel == null)
-//			{
-//				System.out.println("Waiting for connections");
-//				// Go to sleep and try again
-//				Thread.sleep(2*1000);
-//			}
-//			
-//			else // A connection was made
-//			{
-//				System.out.println("Server received a connection from " + clientSocketChannel.getRemoteAddress());
-//				
-//				listenForMessages(); // listen for messages
-//				break;
-//			}
-//		}
-//		
-//	}
-
+	/**
+	 * Method that connects to client and checks if there is readable information
+	 * being sent from the client.
+	 * Uses Selector and SelectorKeys
+	 * 
+	 * @throws IOException
+	 */
 	private void listenForMessages() throws IOException 
 	{
 		// Loop until client sends null message
@@ -89,15 +76,16 @@ public class Server_two
 				break;
 			}
 			
-			selector.select();//waits for answer from selector              
-            Set<SelectionKey> keys = selector.selectedKeys(); //set of keys
-            Iterator<SelectionKey> it = keys.iterator(); //iterration throught set of keys
+			selector.select();// Waits for answer from selector              
+            Set<SelectionKey> keys = selector.selectedKeys(); 
+            Iterator<SelectionKey> it = keys.iterator(); 
 			
 			while(it.hasNext())
 			{
 				SelectionKey key = (SelectionKey) it.next();
 				it.remove();
 				
+				// If key is for a connection, connect to client
 				if(key.isAcceptable()) 
 				{
 					clientSocketChannel  = serverSocketChannel.accept();
@@ -106,7 +94,7 @@ public class Server_two
 					System.out.println("Server received a connection from " + clientSocketChannel.getRemoteAddress());
 					continue;
 				}
-				
+				// If key is for reading, read message and send response
 				if(key.isReadable())
 				{
 					clientSocketChannel = (SocketChannel) key.channel();
@@ -118,6 +106,10 @@ public class Server_two
 		
 	}
 
+	/**
+	 * Method for processing message logic
+	 * 
+	 */
 	private void processMessage()
 	{
 		try {
@@ -126,12 +118,17 @@ public class Server_two
 			sendMessage();
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("There was an error sending or receiving a message from/to the client");
 		}
 	
 	
 	}
-
+	
+	/**
+	 * Sends a response to the client converting message to uppercase
+	 * 
+	 * @throws IOException
+	 */
 	private void sendMessage() throws IOException 
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -139,7 +136,12 @@ public class Server_two
 		clientSocketChannel.write(buffer);
 		
 	}
-
+	
+	/**
+	 * Reads a message fromt he client and prints it to the screen
+	 * 
+	 * @throws IOException
+	 */
 	private void receiveMessage() throws IOException 
 	{
 		ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -155,7 +157,12 @@ public class Server_two
 		}
 		
 	}
-
+	
+	/**
+	 * Starts the server and selector
+	 * 
+	 * @throws IOException
+	 */
 	private void startServer() throws IOException 
 	{
 		localAddress = InetAddress.getLocalHost().getHostAddress().toString();
